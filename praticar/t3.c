@@ -16,7 +16,7 @@ int main( )
     
     return 0;
 }
-
+// teste //
 void ler(char *ptr_pl,int *ptr_cpf, int *ptr_peso){
     printf("insira o nome: \n");
     scanf ("%c", ptr_pl);
