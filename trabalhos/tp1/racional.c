@@ -10,8 +10,6 @@
 
 /* coloque aqui seus includes (primeiro os <...>, depois os "...") */
 #include <stdio.h>
-#include <stdlib.h> 
-#include "racional.h"
 
 
 /*
@@ -20,16 +18,6 @@
  * somente neste arquivo.
 */
 
-struct racional cria_r (long numerador, long denominador){
-	
-
-
-}
-void imprime_r (struct racional){
-
-
-
-}
 /* retorna um número aleatório entre min e max, inclusive. */
 long aleat (long min, long max)
 {
