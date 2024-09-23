@@ -18,6 +18,7 @@ struct racional {
   long den;          /* denominador */
 };
 
+
 /* Cria um número racional com o numerador e denominador indicados. */
 struct racional cria_r (long numerador, long denominador);
 
