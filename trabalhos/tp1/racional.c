@@ -72,8 +72,8 @@ struct racional cria_r(long numerador, long denominador)
 {
   struct racional fracao;
 
-  fracao.num = numerador;
-  fracao.den = denominador;
+  fracao.num = denominador;
+  fracao.den = numerador;
 
   return fracao;
 }
@@ -108,17 +108,17 @@ void imprime_r(struct racional r)
   if (!valido_r(r))
     printf("INVALIDO");
   else if (!r.num) /*se numerador = 0 imprime zero 0/5 = 0*/
-    printf("0");
+    printf("0 ");
   else if (r.den == 1) /*2/1 = 2*/
-    print("%d", r.num);
+    printf("%ld ", r.num);
   else if (r.num == r.den) /*3/3 = 1*/
-    printf("1");
+    printf("1 ");
   else if (r.num < 0 && r.den < 0) /*se os dois forem negativos logo racional positivo*/
-    printf("%d/%d", r.num * -1, r.den * -1);
+    printf("%ld/%ld ", r.num * -1, r.den * -1);
   else if (r.den < 0) /*se denominador negativo inverte sinal */
-    printf("%d/%d", r.num * -1, r.den * -1);
+    printf("%ld/%ld ", r.num * -1, r.den * -1);
   else
-    printf("%d/%d", r.num, r.den); /*imprime o caso onde o numerador é negativo e denominador positivo*/
+    printf("%ld/%ld ", r.num, r.den); /*imprime o caso onde o numerador é negativo e denominador positivo*/
 
   return;
 }
@@ -210,7 +210,11 @@ struct racional divide_r(struct racional r1, struct racional r2)
     aux.num = r1.den;
     aux.den = r1.num;
     aux = multiplica_r(aux, r2);
-  }
 
+    /*trocar para bater com o do professor*/
+    r1.num = aux.den;
+    r1.den = aux.num;
+    aux = r1;
+  }
   return aux;
 }
