@@ -29,18 +29,21 @@ long aleat(long min, long max)
   return (aleatorio % (max - min + 1) + min);
 }
 
+
 /* Máximo Divisor Comum entre a e b      */
 /* calcula o MDC pelo método de Euclides */
 long mdc(long a, long b)
 {
-  return 0;
+  if (b == 0)
+        return a;
+    return mdc(b, a % b);
 }
 
 /* Mínimo Múltiplo Comum entre a e b */
 /* mmc = (a * b) / mdc (a, b)        */
 long mmc(long a, long b)
 {
-  return 0;
+  return ((a * b) / mdc(a, b));
 }
 
 /* Recebe um número racional e o simplifica.
@@ -50,7 +53,19 @@ long mmc(long a, long b)
  * Se r for inválido, devolve-o sem simplificar. */
 struct racional simplifica_r(struct racional r)
 {
+  long divisor;
 
+  if (!valido_r(r))
+    return r;
+
+  /*realiza o mdc do numerador e denominador*/
+  divisor = mdc(r.num, r.den);
+
+  /*divide pelo maximo divisor comum entre eles*/
+  r.num /= divisor;
+  r.den /= divisor;
+
+  return r;
 }
 
 /* implemente as demais funções aqui */
@@ -67,4 +82,44 @@ struct racional cria_r(long numerador, long denominador)
 int valido_r(struct racional r)
 {
   return r.den;
+}
+
+struct racional sorteia_r (long min, long max)
+{ 
+  struct racional fracao;
+
+  /*crio a fração com numerador e denominador aleatorios 
+  entre min e max*/
+  fracao = cria_r(aleat(min,max), aleat(min,max));
+  
+  /*se for invalida não precisa calcular o mdc
+  e retorna a fração invalida*/
+  if (!valido_r(fracao))
+    return fracao;
+
+  return simplifica_r(fracao);
+}
+
+void imprime_r (struct racional r)
+{
+  
+  r = simplifica_r(r);
+  
+  /*testa se o racional é invalido*/
+  if (!valido_r(r))
+    printf("INVALIDO");
+  else if (!r.num)  /*se numerador = 0 imprime zero 0/5 = 0*/
+    printf("0");
+  else if (r.den == 1) /*2/1 = 2*/
+    print("%d", r.num);
+  else if (r.num == r.den) /*3/3 = 1*/
+    printf("1");
+  else if (r.num < 0 && r.den < 0) /*se os dois forem negativos logo racional positivo*/
+    printf ("%d/%d", r.num * -1, r.den * -1);
+  else if (r.den < 0) /*se denominador negativo inverte sinal */
+    printf ("%d/%d", r.num * -1, r.den * -1);
+  else
+    printf("%d/%d", r.num, r.den); /*imprime o caso onde o numerador é negativo e denominador positivo*/
+
+  return;
 }
