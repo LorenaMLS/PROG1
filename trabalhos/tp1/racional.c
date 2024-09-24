@@ -106,7 +106,7 @@ void imprime_r(struct racional r)
 
   /*testa se o racional é invalido*/
   if (!valido_r(r))
-    printf("INVALIDO");
+    printf("INVALIDO ");
   else if (!r.num) /*se numerador = 0 imprime zero 0/5 = 0*/
     printf("0 ");
   else if (r.den == 1) /*2/1 = 2*/
