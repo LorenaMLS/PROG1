@@ -29,14 +29,13 @@ long aleat(long min, long max)
   return (aleatorio % (max - min + 1) + min);
 }
 
-
 /* Máximo Divisor Comum entre a e b      */
 /* calcula o MDC pelo método de Euclides */
 long mdc(long a, long b)
 {
   if (b == 0)
-        return a;
-    return mdc(b, a % b);
+    return a;
+  return mdc(b, a % b);
 }
 
 /* Mínimo Múltiplo Comum entre a e b */
@@ -84,14 +83,14 @@ int valido_r(struct racional r)
   return r.den;
 }
 
-struct racional sorteia_r (long min, long max)
-{ 
+struct racional sorteia_r(long min, long max)
+{
   struct racional fracao;
 
-  /*crio a fração com numerador e denominador aleatorios 
+  /*crio a fração com numerador e denominador aleatorios
   entre min e max*/
-  fracao = cria_r(aleat(min,max), aleat(min,max));
-  
+  fracao = cria_r(aleat(min, max), aleat(min, max));
+
   /*se for invalida não precisa calcular o mdc
   e retorna a fração invalida*/
   if (!valido_r(fracao))
@@ -100,97 +99,118 @@ struct racional sorteia_r (long min, long max)
   return simplifica_r(fracao);
 }
 
-void imprime_r (struct racional r)
+void imprime_r(struct racional r)
 {
-  
+
   r = simplifica_r(r);
-  
+
   /*testa se o racional é invalido*/
   if (!valido_r(r))
     printf("INVALIDO");
-  else if (!r.num)  /*se numerador = 0 imprime zero 0/5 = 0*/
+  else if (!r.num) /*se numerador = 0 imprime zero 0/5 = 0*/
     printf("0");
   else if (r.den == 1) /*2/1 = 2*/
     print("%d", r.num);
   else if (r.num == r.den) /*3/3 = 1*/
     printf("1");
   else if (r.num < 0 && r.den < 0) /*se os dois forem negativos logo racional positivo*/
-    printf ("%d/%d", r.num * -1, r.den * -1);
+    printf("%d/%d", r.num * -1, r.den * -1);
   else if (r.den < 0) /*se denominador negativo inverte sinal */
-    printf ("%d/%d", r.num * -1, r.den * -1);
+    printf("%d/%d", r.num * -1, r.den * -1);
   else
     printf("%d/%d", r.num, r.den); /*imprime o caso onde o numerador é negativo e denominador positivo*/
 
   return;
 }
 
-struct racional soma_r (struct racional r1, struct racional r2)
+struct racional soma_r(struct racional r1, struct racional r2)
 {
   struct racional aux;
 
-  if (!valido_r(r1) || valido_r(r2))
-    printf("INVALIDO");
+  if (!valido_r(r1) || !valido_r(r2))
+  {
+    /*garantindo que seja invalido*/
+    aux.den = 0;
+    aux.num = 0;
+  }
   else if (r1.den != r2.den) /*3/10 diferente 5/8*/
   {
     aux.den = mmc(r1.den, r2.den);
-    /* divide o denominador pelo mmc e multiplica pelo numerador, 
+    /* divide o denominador pelo mmc e multiplica pelo numerador,
     repetindo com o segundo racional e somando os dois*/
     aux.num = (aux.den / r1.den * r1.num) + (aux.den / r2.den * r2.num);
   }
-  else 
+  else
   {
     /*se os denominadores forem iguais repete e soma os numeradores*/
     aux.den = r1.den;
     aux.num = r1.num + r2.num;
   }
-  
+
   return simplifica_r(aux);
-  
 }
 
-struct racional subtrai_r (struct racional r1, struct racional r2)
+struct racional subtrai_r(struct racional r1, struct racional r2)
 {
   struct racional aux;
 
-  if (!valido_r(r1) || valido_r(r2))
-    printf("INVALIDO");
+  if (!valido_r(r1) || !valido_r(r2))
+  {
+    /*garantindo que seja invalido*/
+    aux.den = 0;
+    aux.num = 0;
+  }
   else if (r1.den != r2.den) /*3/10 diferente 5/8*/
   {
     aux.den = mmc(r1.den, r2.den);
-    /* divide o denominador pelo mmc e multiplica pelo numerador, 
+    /* divide o denominador pelo mmc e multiplica pelo numerador,
     repetindo com o segundo racional e subtrai os dois*/
     aux.num = (aux.den / r1.den * r1.num) - (aux.den / r2.den * r2.num);
   }
-  else 
+  else
   {
     /*se os denominadores forem iguais repete e subtrai os numeradores*/
     aux.den = r1.den;
     aux.num = r1.num - r2.num;
   }
-  
+
   return simplifica_r(aux);
-  
 }
 
-struct racional multiplica_r (struct racional r1, struct racional r2)
+struct racional multiplica_r(struct racional r1, struct racional r2)
 {
   struct racional aux;
 
-  if (!valido_r(r1) || valido_r(r2))
-    printf("INVALIDO");
+  if (!valido_r(r1) || !valido_r(r2))
+  {
+    /*garantindo que seja invalido*/
+    aux.den = 0;
+    aux.num = 0;
+  }
 
   aux.num = r1.num * r2.num;
   aux.den = r1.den * r2.den;
 
   return simplifica_r(aux);
-
 }
 
-struct racional divide_r (struct racional r1, struct racional r2)
+struct racional divide_r(struct racional r1, struct racional r2)
 {
-  
+  struct racional aux;
+
+  if (!valido_r(r1) || !valido_r(r2))
+  {
+    /*garantindo que seja invalido*/
+    aux.den = 0;
+    aux.num = 0;
+  }
+  /*inverte o denominador pelo numerador*/
+  else 
+  {
+    aux.num = r1.den;
+    aux.den = r1.num;
+    aux = multiplica_r(aux, r2);
+  }
+
+  return aux;
 }
-
-
-
-
