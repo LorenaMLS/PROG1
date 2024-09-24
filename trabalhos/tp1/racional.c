@@ -123,3 +123,74 @@ void imprime_r (struct racional r)
 
   return;
 }
+
+struct racional soma_r (struct racional r1, struct racional r2)
+{
+  struct racional aux;
+
+  if (!valido_r(r1) || valido_r(r2))
+    printf("INVALIDO");
+  else if (r1.den != r2.den) /*3/10 diferente 5/8*/
+  {
+    aux.den = mmc(r1.den, r2.den);
+    /* divide o denominador pelo mmc e multiplica pelo numerador, 
+    repetindo com o segundo racional e somando os dois*/
+    aux.num = (aux.den / r1.den * r1.num) + (aux.den / r2.den * r2.num);
+  }
+  else 
+  {
+    /*se os denominadores forem iguais repete e soma os numeradores*/
+    aux.den = r1.den;
+    aux.num = r1.num + r2.num;
+  }
+  
+  return simplifica_r(aux);
+  
+}
+
+struct racional subtrai_r (struct racional r1, struct racional r2)
+{
+  struct racional aux;
+
+  if (!valido_r(r1) || valido_r(r2))
+    printf("INVALIDO");
+  else if (r1.den != r2.den) /*3/10 diferente 5/8*/
+  {
+    aux.den = mmc(r1.den, r2.den);
+    /* divide o denominador pelo mmc e multiplica pelo numerador, 
+    repetindo com o segundo racional e subtrai os dois*/
+    aux.num = (aux.den / r1.den * r1.num) - (aux.den / r2.den * r2.num);
+  }
+  else 
+  {
+    /*se os denominadores forem iguais repete e subtrai os numeradores*/
+    aux.den = r1.den;
+    aux.num = r1.num - r2.num;
+  }
+  
+  return simplifica_r(aux);
+  
+}
+
+struct racional multiplica_r (struct racional r1, struct racional r2)
+{
+  struct racional aux;
+
+  if (!valido_r(r1) || valido_r(r2))
+    printf("INVALIDO");
+
+  aux.num = r1.num * r2.num;
+  aux.den = r1.den * r2.den;
+
+  return simplifica_r(aux);
+
+}
+
+struct racional divide_r (struct racional r1, struct racional r2)
+{
+  
+}
+
+
+
+
