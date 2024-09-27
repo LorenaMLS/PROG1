@@ -72,24 +72,30 @@ struct racional cria_r(long numerador, long denominador)
 {
   struct racional fracao;
 
-  fracao.num = denominador;
-  fracao.den = numerador;
+  fracao.num = numerador;
+  fracao.den = denominador;
 
   return fracao;
 }
 
 int valido_r(struct racional r)
 {
-  return r.den;
+  if (!r.den)
+    return 0;
+
+  return 1;
 }
 
 struct racional sorteia_r(long min, long max)
 {
   struct racional fracao;
+  long num, den;
 
-  /*crio a fração com numerador e denominador aleatorios
+  /*cria a fração com numerador e denominador aleatorios
   entre min e max*/
-  fracao = cria_r(aleat(min, max), aleat(min, max));
+  num = aleat(min, max);
+  den = aleat(min, max);
+  fracao = cria_r(num, den);
 
   /*se for invalida não precisa calcular o mdc
   e retorna a fração invalida*/
@@ -127,12 +133,9 @@ struct racional soma_r(struct racional r1, struct racional r2)
 {
   struct racional aux;
 
-  if (!valido_r(r1) || !valido_r(r2))
-  {
-    /*garantindo que seja invalido*/
-    aux.den = 0;
-    aux.num = 0;
-  }
+  if (!valido_r(r2))
+    return r2;
+
   else if (r1.den != r2.den) /*3/10 diferente 5/8*/
   {
     aux.den = mmc(r1.den, r2.den);
@@ -154,12 +157,9 @@ struct racional subtrai_r(struct racional r1, struct racional r2)
 {
   struct racional aux;
 
-  if (!valido_r(r1) || !valido_r(r2))
-  {
-    /*garantindo que seja invalido*/
-    aux.den = 0;
-    aux.num = 0;
-  }
+  if (!valido_r(r2))
+    return r2;
+
   else if (r1.den != r2.den) /*3/10 diferente 5/8*/
   {
     aux.den = mmc(r1.den, r2.den);
@@ -181,13 +181,10 @@ struct racional multiplica_r(struct racional r1, struct racional r2)
 {
   struct racional aux;
 
-  if (!valido_r(r1) || !valido_r(r2))
-  {
-    /*garantindo que seja invalido*/
-    aux.den = 0;
-    aux.num = 0;
-  }
+  if (!valido_r(r2))
+    return r2;
 
+  /*realiza a multiplicação dos racionais*/
   aux.num = r1.num * r2.num;
   aux.den = r1.den * r2.den;
 
@@ -198,23 +195,13 @@ struct racional divide_r(struct racional r1, struct racional r2)
 {
   struct racional aux;
 
-  if (!valido_r(r1) || !valido_r(r2))
-  {
-    /*garantindo que seja invalido*/
-    aux.den = 0;
-    aux.num = 0;
-  }
-  /*inverte o denominador pelo numerador*/
-  else 
-  {
-    aux.num = r1.den;
-    aux.den = r1.num;
-    aux = multiplica_r(aux, r2);
+  if (!valido_r(r2))
+    return r2;
 
-    /*trocar para bater com o do professor*/
-    r1.num = aux.den;
-    r1.den = aux.num;
-    aux = r1;
-  }
+  /*inverte o denominador pelo numerador*/
+  aux.num = r2.den;
+  aux.den = r2.num;
+  aux = multiplica_r(aux, r1);
+
   return aux;
 }

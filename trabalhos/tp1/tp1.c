@@ -30,12 +30,12 @@ int main()
 
     for (i = 1; i <= n; i++)
     {
-        printf("%d: ", i); 
-        
+        printf("%d: ", i);
+
         /*sorteia e em seguida imprime*/
         r1 = sorteia_r(max * -1, max);
         r2 = sorteia_r(max * -1, max);
-        
+
         imprime_r(r1);
         imprime_r(r2);
 
@@ -46,21 +46,19 @@ int main()
             return 1;
         }
 
-        /*imprime respectivamente soma, subtrai, multiplica e testa se a divisão é valida*/
-        imprime_r(soma_r(r1, r2));
-        imprime_r(subtrai_r(r1, r2));
-        imprime_r(multiplica_r(r1, r2));
-
-        /*se nao for valida sai*/
+        /*se divisão não for valida sai*/
         if (!valido_r(divide_r(r1, r2)))
         {
             printf("DIVISAO INVALIDA\n");
             return 1;
         }
-        
-        /*se for valida imprime*/
+
+        /*imprime respectivamente soma, subtrai, multiplica e divide*/
+        imprime_r(soma_r(r1, r2));
+        imprime_r(subtrai_r(r1, r2));
+        imprime_r(multiplica_r(r1, r2));
         imprime_r(divide_r(r1, r2));
-    
+
         printf("\n");
     }
 
