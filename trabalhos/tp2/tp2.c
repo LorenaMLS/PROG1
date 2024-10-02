@@ -12,6 +12,7 @@
 /* programa principal */
 int main ()
 {
+  srand(0);
   /* a completar! */
 
   return (0) ;
