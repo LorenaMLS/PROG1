@@ -10,6 +10,7 @@
 
 /* coloque aqui seus includes (primeiro os <...>, depois os "...") */
 #include <stdio.h>
+#include <stdlib.h>
 #include "racional.h"
 
 /*
@@ -22,7 +23,7 @@
 long aleat(long min, long max)
 {
   /*retorna um numero aleatorio entre max e min*/
-  return rand() % (max - min + 1) + min;
+  return (rand() % (max - min + 1)) + min;
 }
 
 /* Máximo Divisor Comum entre a e b      */
@@ -96,13 +97,11 @@ struct racional sorteia_r(long min, long max)
   /*cria a fração com numerador e denominador aleatorios
   entre min e max*/
   num = aleat(min, max);
+  printf("numerador = %ld\n", num);
   den = aleat(min, max);
-  r = cria_r(num, den);
+  printf("denominador = %ld\n", den);
 
-  /*se for invalida não precisa calcular o mdc
-  e retorna a fração invalida*/
-  if (!valido_r(r))
-    return r;
+  r = cria_r(num, den);
 
   return simplifica_r(r);
 }
@@ -120,6 +119,8 @@ void imprime_r(struct racional r)
     printf("%ld", r.num);
   else if (r.num == r.den) /*3/3 = 1*/
     printf("1");
+  else 
+    printf("%ld/%ld", r.num, r.den);
 
   return;
 }
@@ -209,7 +210,7 @@ int multiplica_r(struct racional r1, struct racional r2, struct racional *r3)
   return 1;
 }
 
-divide_r(struct racional r1, struct racional r2, struct racional *r3)
+int divide_r(struct racional r1, struct racional r2, struct racional *r3)
 {
   struct racional aux;
 
@@ -220,7 +221,5 @@ divide_r(struct racional r1, struct racional r2, struct racional *r3)
   aux.num = r2.den;
   aux.den = r2.num;
 
-  r3 = multiplica_r(r1, aux, r3);
-
-  return 1;
+  return multiplica_r(r1, aux, r3);
 }
