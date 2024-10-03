@@ -25,13 +25,14 @@ int main()
     scanf("%ld", &n);
   } while (n < 0 || n > 100);
 
+  //printf ("VETOR = ");
+
   for (i = 0;i < n; i++)
   {
-    r[i] = sorteia_r(n * -1, n);
-    // imprime_r(r[i]);
+    /*eu não sorteio os racionais eu leio*/
+    imprime_r(r[i]);
     printf (" ");
   }
-  printf ("\n");
 
     return (0);
 }

@@ -22,7 +22,6 @@
 /* retorna um número aleatório entre min e max, inclusive. */
 long aleat(long min, long max)
 {
-  /*retorna um numero aleatorio entre max e min*/
   return (rand() % (max - min + 1)) + min;
 }
 
@@ -97,12 +96,9 @@ struct racional sorteia_r(long min, long max)
   /*cria a fração com numerador e denominador aleatorios
   entre min e max*/
   num = aleat(min, max);
-  printf("numerador = %ld\n", num);
   den = aleat(min, max);
-  printf("denominador = %ld\n", den);
-
   r = cria_r(num, den);
-
+  
   return simplifica_r(r);
 }
 
