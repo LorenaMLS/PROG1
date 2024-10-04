@@ -10,6 +10,15 @@
 #include "racional.h"
 
 /* coloque aqui as funções auxiliares que precisar neste arquivo */
+int elimina_invalidos (struct racional r[], int n)
+{
+  int i;
+  for (i = 0; i < n; i++)
+  {
+    if (!valido_r(r[i]))
+      r[i] = 
+  }
+}
 
 /* programa principal */
 int main()
@@ -25,12 +34,12 @@ int main()
     scanf("%ld", &n);
   } while (n < 0 || n > 100);
 
-  // printf ("VETOR = ");
+  printf ("VETOR = ");
 
+  /*leitura dos racionais e impressão*/
   for (i = 0; i < n; i++)
   {
-    scanf("%ld", &num);
-    scanf("%ld", &den);
+    scanf("%ld %ld", &num, &den);
     r[i] = cria_r(num, den);
     imprime_r(r[i]);
     printf(" ");
