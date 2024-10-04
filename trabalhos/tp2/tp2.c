@@ -16,7 +16,7 @@ int main()
 {
   struct racional r[100];
   int i;
-  long n;
+  long n, num, den;
 
   srand(0);
   /* a completar! */
@@ -25,14 +25,16 @@ int main()
     scanf("%ld", &n);
   } while (n < 0 || n > 100);
 
-  //printf ("VETOR = ");
+  // printf ("VETOR = ");
 
-  for (i = 0;i < n; i++)
+  for (i = 0; i < n; i++)
   {
-    /*eu não sorteio os racionais eu leio*/
+    scanf("%ld", &num);
+    scanf("%ld", &den);
+    r[i] = cria_r(num, den);
     imprime_r(r[i]);
-    printf (" ");
+    printf(" ");
   }
-
-    return (0);
+  printf("\n");
+  return (0);
 }
