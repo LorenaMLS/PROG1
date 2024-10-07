@@ -15,5 +15,10 @@ racional.o: racional.c racional.h
 tp2.o: tp2.c racional.h
 	$(CC) -c $(CFLAGS) tp2.c
 
+# git resumido
+git:
+	make clean;git add .;git commit -m "[git]subiu pelo make";git push
+
+
 clean:
 	rm -f *.o *~ tp2
