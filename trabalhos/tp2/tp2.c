@@ -10,27 +10,44 @@
 #include "racional.h"
 
 /* coloque aqui as funções auxiliares que precisar neste arquivo */
-int elimina_invalidos(struct racional r[], int n)
+int elimina_invalidos(struct racional r[], long *n)
 {
-  int i, j;
-  for (i = 0; i < n; i++)
+  int i;
+  long tam;
+
+  if (!r || !n)
+    return 0;
+
+  tam = *n;
+  tam--;
+  for (i = 0; i <= tam; i++)
   {
     if (!valido_r(r[i]))
-      for (j = n; j > i; j--) /*Substitui por um while*/
-      {
-        if (!valido_r(r[n]))
-          n--;
-        else
-        {
-          r[i] = r[j];
-          n--;
-          imprime_r(r[i]);
-          printf(" ");
-        }
-      }
+    {
+      while (!valido_r(r[tam]) && tam > i)
+        tam--;
+
+      r[i] = r[tam];
+      tam--;
+    }
+  }
+  *n = tam + 1;
+  return 1;
+}
+
+void imprime_vetor(struct racional r[], long n)
+{
+  int i;
+
+  if (!r)
+    return;
+
+  for (i = 0; i < n; i++)
+  {
     imprime_r(r[i]);
     printf(" ");
   }
+  printf("\n");
 }
 
 /* programa principal */
@@ -59,7 +76,8 @@ int main()
   }
 
   printf("\nVETOR = ");
-  elimina_invalidos(r, n);
+  elimina_invalidos(r, &n);
+  imprime_vetor(r, n);
 
   return 0;
 }
