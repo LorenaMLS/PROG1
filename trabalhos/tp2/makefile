@@ -18,11 +18,14 @@ $(TP).o: $(TP).c racional.h
 
 # git resumido
 git:
-	make clean;git add .;git commit -m "[git]subiu pelo make";git push
+	make clean; git add .; git commit -m "$(c)"; git push
 
 # apaga, recompila e executa
 ll:
-	make clean;clear;make;./$(TP)
+	make clean; clear; make; ./$(TP)
 
 clean:
 	rm -f *.o *~ $(TP)
+
+# Define uma variável de comentário padrão
+c ?= "[git]subiu pelo make"

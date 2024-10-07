@@ -138,6 +138,9 @@ int compara_r(struct racional r1, struct racional r2)
   r1.num = denominador_comum / r1.den * r1.num;
   r2.num = denominador_comum / r2.den * r2.num;
   
+   /* Compara os numeradores ajustados. 
+     Se o numerador do primeiro racional for menor, retorna -1. 
+     Caso contrário, retorna 1. */
   if (r1.num < r2.num)
     return -1;
   else

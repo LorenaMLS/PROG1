@@ -49,9 +49,19 @@ void imprime_vetor(struct racional r[], long n)
   printf("\n");
 }
 
-int ordena_vetor(struct racional r[], long n)
+struct racional soma_tudo(struct racional r[], long n)
 {
-  
+  struct racional aux;
+  int i;
+
+  if (!r)
+    return cria_r(0, 1);
+
+  aux = r[0];
+  for (i = 1; i < n; i++)
+    soma_r(r[i], aux, &aux);
+
+  return aux;
 }
 
 /* programa principal */
@@ -83,5 +93,7 @@ int main()
   n = elimina_invalidos(r, n);
   imprime_vetor(r, n);
 
+  imprime_r(soma_tudo(r, n));
+  printf("\n");
   return 0;
 }
