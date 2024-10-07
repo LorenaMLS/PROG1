@@ -187,7 +187,7 @@ int subtrai_r(struct racional r1, struct racional r2, struct racional *r3)
     r3->num = r1.num - r2.num;
   }
 
-  *r3 = simplifica_r(*r3); /*não tenho ctz*/
+  *r3 = simplifica_r(*r3); 
 
   return 1;
 }
@@ -201,7 +201,7 @@ int multiplica_r(struct racional r1, struct racional r2, struct racional *r3)
   r3->num = r1.num * r2.num;
   r3->den = r1.den * r2.den;
 
-  *r3 = simplifica_r(*r3); /*não tenho ctz*/
+  *r3 = simplifica_r(*r3); 
 
   return 1;
 }

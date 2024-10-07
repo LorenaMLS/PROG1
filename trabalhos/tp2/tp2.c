@@ -9,30 +9,29 @@
 #include <stdlib.h>
 #include "racional.h"
 
-/* coloque aqui as funções auxiliares que precisar neste arquivo */
-int elimina_invalidos(struct racional r[], long *n)
+/*função que elimina os invalidos e retorna o tamanho*/
+int elimina_invalidos(struct racional r[], long n)
 {
   int i;
-  long tam;
 
-  if (!r || !n)
+  if (!r)
     return 0;
 
-  tam = *n;
-  tam--;
-  for (i = 0; i <= tam; i++)
+  for (i = 0; i < n; i++)
   {
+    /*se encontrei NaN troca pelo ultimo elemento do vetor*/
     if (!valido_r(r[i]))
     {
-      while (!valido_r(r[tam]) && tam > i)
-        tam--;
+      /*enquanto o ultimo elemento for NaN, elimina ultimo*/
+      while (!valido_r(r[n - 1]) && n > i)
+        n--;
 
-      r[i] = r[tam];
-      tam--;
+      r[i] = r[n - 1];
+      n--;
     }
   }
-  *n = tam + 1;
-  return 1;
+
+  return n + 1;
 }
 
 void imprime_vetor(struct racional r[], long n)
@@ -48,6 +47,11 @@ void imprime_vetor(struct racional r[], long n)
     printf(" ");
   }
   printf("\n");
+}
+
+int ordena_vetor(struct racional r[], long n)
+{
+  
 }
 
 /* programa principal */
@@ -76,7 +80,7 @@ int main()
   }
 
   printf("\nVETOR = ");
-  elimina_invalidos(r, &n);
+  n = elimina_invalidos(r, n);
   imprime_vetor(r, n);
 
   return 0;
