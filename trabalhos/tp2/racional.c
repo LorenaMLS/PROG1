@@ -98,7 +98,7 @@ struct racional sorteia_r(long min, long max)
   num = aleat(min, max);
   den = aleat(min, max);
   r = cria_r(num, den);
-  
+
   return simplifica_r(r);
 }
 
@@ -115,7 +115,7 @@ void imprime_r(struct racional r)
     printf("%ld", r.num);
   else if (r.num == r.den) /*3/3 = 1*/
     printf("1");
-  else 
+  else
     printf("%ld/%ld", r.num, r.den);
 
   return;
@@ -123,25 +123,22 @@ void imprime_r(struct racional r)
 
 int compara_r(struct racional r1, struct racional r2)
 {
-  long denominador_comum;
-
+  long fracao1, fracao2;
+  
   if (!valido_r(r1) || !valido_r(r2))
     return -2;
 
-  /*compara se os dois racionais são iguais*/
-  if (r1.num == r2.num && r1.den == r2.den)
-    return 0;
+  r1 = simplifica_r(r1);
+  r2 = simplifica_r(r2);
 
-  /*iguala as bases*/
-  denominador_comum = mmc(r1.den, r2.den);
-  /*divide a base pelos denominadores (r1 e r2) e multiplica pelo numeradores*/
-  r1.num = denominador_comum / r1.den * r1.num;
-  r2.num = denominador_comum / r2.den * r2.num;
-  
-   /* Compara os numeradores ajustados. 
-     Se o numerador do primeiro racional for menor, retorna -1. 
-     Caso contrário, retorna 1. */
-  if (r1.num < r2.num)
+
+  /*realiza multiplicação cruzada para saber qual racional é maior*/
+  fracao1 = r1.num * r2.den;
+  fracao2 = r2.num * r1.den;
+
+  if (fracao1 == fracao2)
+    return 0;
+  else if (fracao1 < fracao2)
     return -1;
   else
     return 1;
@@ -190,7 +187,7 @@ int subtrai_r(struct racional r1, struct racional r2, struct racional *r3)
     r3->num = r1.num - r2.num;
   }
 
-  *r3 = simplifica_r(*r3); 
+  *r3 = simplifica_r(*r3);
 
   return 1;
 }
@@ -204,7 +201,7 @@ int multiplica_r(struct racional r1, struct racional r2, struct racional *r3)
   r3->num = r1.num * r2.num;
   r3->den = r1.den * r2.den;
 
-  *r3 = simplifica_r(*r3); 
+  *r3 = simplifica_r(*r3);
 
   return 1;
 }
