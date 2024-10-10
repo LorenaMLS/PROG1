@@ -51,7 +51,7 @@ int simplifica_r(struct racional *r)
   r->den /= divisor;
   r->num /= divisor;
 
-  /*se o denominador for negativo logo ocorre mudanças e sinais*/
+  /*se o denominador for negativo logo ocorre mudanças de sinais*/
   if (r->den < 0)
   {
     r->den *= -1;
@@ -60,8 +60,6 @@ int simplifica_r(struct racional *r)
 
   return r;
 }
-
-/* implemente as demais funções de racional.h aqui */
 
 struct racional *cria_r(long numerador, long denominador)
 {
@@ -83,6 +81,7 @@ void destroi_r(struct racional *r)
 
   free(r);
   r = NULL;
+
 }
 
 int valido_r(struct racional *r)
