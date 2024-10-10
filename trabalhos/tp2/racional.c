@@ -58,7 +58,7 @@ struct racional simplifica_r(struct racional r)
   r.den /= divisor;
   r.num /= divisor;
 
-  /*se o denominador for negativo logo ocorre mudanças e sinais*/
+  /*se o denominador for negativo logo ocorre mudanças de sinais*/
   if (r.den < 0)
   {
     r.den *= -1;
@@ -67,8 +67,6 @@ struct racional simplifica_r(struct racional r)
 
   return r;
 }
-
-/* implemente as demais funções de racional.h aqui */
 
 struct racional cria_r(long numerador, long denominador)
 {
@@ -163,7 +161,7 @@ int soma_r(struct racional r1, struct racional r2, struct racional *r3)
     r3->num = r1.num + r2.num;
   }
 
-  *r3 = simplifica_r(*r3); /*não tenho ctz*/
+  *r3 = simplifica_r(*r3);
 
   return 1;
 }

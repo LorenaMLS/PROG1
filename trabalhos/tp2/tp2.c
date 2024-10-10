@@ -148,7 +148,7 @@ int main()
   {
     scanf("%ld %ld", &num, &den);
     r[i] = cria_r(num, den);
-    imprime_r(r[i]);  /*aproveitando o mesmo for para imprimir*/
+    imprime_r(r[i]);  /*aproveitando o mesmo For para imprimir*/
     printf(" ");
   }
 
