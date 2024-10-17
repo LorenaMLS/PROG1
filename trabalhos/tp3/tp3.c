@@ -11,13 +11,31 @@
 
 /* coloque aqui as funções auxiliares que precisar neste arquivo */
 
-/*imprime o vetor de racionais*/
-void imprime_vetor(struct racional *r[], long n)
+/*função que aloca n posições de racionais e retorna 1 sucesso e 0 se falha*/
+int ler_vetor(struct racional *r[], long n)
+{
+  int i;
+  long num, den;
+
+  if (!r)
+    return 0;
+
+  for (i = 0; i < n; i++)
+  {
+    scanf("%ld %ld", &num, &den);
+    r[i] = cria_r(num, den);
+  }
+
+  return 1;
+}
+
+/*imprime o vetor de racionais, retorna 1 sucesso e 0 se falha*/
+int imprime_vetor(struct racional *r[], long n)
 {
   int i;
 
   if (!r)
-    return;
+    return 0;
 
   for (i = 0; i < n; i++)
   {
@@ -25,6 +43,35 @@ void imprime_vetor(struct racional *r[], long n)
     printf(" ");
   }
   printf("\n");
+
+  return 1;
+}
+
+/*função que cria um vetor de ponteiros de ponteiros*/
+struct racional **aloca_vetor(long n)
+{
+  struct racional **r;
+
+  if (!(r = malloc(sizeof(struct racional) * n)))
+    return NULL;
+
+  return r;
+}
+
+/*função que destroi um vetor de ponteiros*/
+void destroi_vetor(struct racional **r, long n)
+{
+  int i;
+  if (!r)
+    return;
+
+  for (i = 0; i < n; i++)
+  {
+    destroi_r(r[i]);
+  }
+
+  free(r);
+  r = NULL;
 }
 
 /*função que elimina os invalidos e retorna o novo tamanho do vetor*/
@@ -61,8 +108,7 @@ int elimina_invalidos(struct racional *r[], long n)
 int main()
 {
   struct racional **r;
-  int i;
-  long n, num, den;
+  long n;
 
   /*leitura do n*/
   do
@@ -70,19 +116,16 @@ int main()
     scanf("%ld", &n);
   } while (n < 0 || n > 100);
 
-  if (!(r = malloc(sizeof(struct racional) * n)))
+  if(!(r = aloca_vetor(n)))
     return 0;
 
-  for (i = 0; i < n; i++)
-  {
-    scanf("%ld %ld", &num, &den);
-    r[i] = cria_r(num, den);
-  }
+  if(!ler_vetor(r, n))
+    return 0;
 
   printf("VETOR = ");
   imprime_vetor(r, n);
 
-  printf ("VETOR = ");
+  printf("VETOR = ");
   n = elimina_invalidos(r, n);
   imprime_vetor(r, n);
 

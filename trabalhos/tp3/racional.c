@@ -10,6 +10,7 @@
 
 /* coloque aqui seus includes (primeiro os <...>, depois os "...") */
 #include <stdio.h>
+#include <stdlib.h>
 #include "racional.h"
 
 /*
@@ -44,7 +45,7 @@ int simplifica_r(struct racional *r)
   long divisor;
 
   if (!r || !valido_r(r))
-    return r;
+    return 0;
 
   /*simplifica o racional*/
   divisor = mdc(r->num, r->den);
@@ -58,7 +59,7 @@ int simplifica_r(struct racional *r)
     r->num *= -1;
   }
 
-  return r;
+  return 1;
 }
 
 struct racional *cria_r(long numerador, long denominador)
