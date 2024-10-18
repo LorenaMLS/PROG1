@@ -68,10 +68,8 @@ void destroi_vetor(struct racional **r, long n)
   for (i = 0; i < n; i++)
   {
     destroi_r(r[i]);
+    r[i] = NULL;
   }
-
-  free(r);
-  r = NULL;
 }
 
 /*função que elimina os invalidos e retorna o novo tamanho do vetor*/
@@ -93,15 +91,14 @@ int elimina_invalidos(struct racional **r, long n)
         destroi_r(r[n - 1]);
         n--;
       }
-
-      /* estroi_r(r[i]);
-      r[i] = r[n - 1];
-      n--; */
-      
-    } 
-
+      if (n != i)
+      {
+        destroi_r(r[i]);
+        r[i] = r[n - 1];
+        n--;
+      }
+    }
   }
-
   return n;
 }
 
@@ -162,14 +159,11 @@ int soma_tudo(struct racional **r, long n)
 {
   int i;
 
-  if (!r)
+  if (!r || !n)
     return 0;
 
   for (i = 1; i < n; i++)
     soma_r(r[0], r[i], r[0]);
-
-  if (!valido_r(r[0]))
-    return 0;
 
   return 1;
 }
@@ -213,6 +207,10 @@ int main()
   printf("\n");
 
   destroi_vetor(r, n);
+  printf("VETOR = ");
+  imprime_vetor(r, n);
+
+  free(r);
 
   return 0;
 }

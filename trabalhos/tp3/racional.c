@@ -81,8 +81,6 @@ void destroi_r(struct racional *r)
     return;
 
   free(r);
-  r = NULL;
-
 }
 
 int valido_r(struct racional *r)
@@ -99,7 +97,7 @@ void imprime_r(struct racional *r)
     printf("NULL");
 
   /*simplifica retorna 0 se nor NaN caso contrario simplifica*/
-  if (!simplifica_r(r))
+  else if (!simplifica_r(r))
   {
     printf("NaN");
     return;
@@ -139,19 +137,22 @@ int compara_r(struct racional *r1, struct racional *r2)
 
 int soma_r(struct racional *r1, struct racional *r2, struct racional *r3)
 {
+  long multiplo;
+
   if (!r3 || !simplifica_r(r1) || !simplifica_r(r2))
     return 0;
 
   if (r1->den != r2->den) /*3/10 diferente 5/8*/
   {
-    r3->den = mmc(r1->den, r2->den);
+    multiplo = mmc(r1->den, r2->den);
     /* divide o denominador pelo mmc e multiplica pelo numerador,
     repetindo com o segundo racional e subtraindo os dois*/
-    r3->num = (r3->den / r1->den * r1->num) + (r3->den / r2->den * r2->num);
+    r3->num = (multiplo / r1->den * r1->num) + (multiplo / r2->den * r2->num);
+    r3->den = multiplo;
   }
   else
   {
-    /*se os denominadores forem iguais repete e subtrai os numeradores*/
+    /*se os denominadores forem iguais repete e soma os numeradores*/
     r3->den = r1->den;
     r3->num = r1->num + r2->num;
   }
