@@ -95,16 +95,15 @@ int valido_r(struct racional *r)
 
 void imprime_r(struct racional *r)
 {
-  /*simplifica retorna 0 se nor NULL caso contrario simplifica*/
+  if (!r)
+    printf("NULL");
+
+  /*simplifica retorna 0 se nor NaN caso contrario simplifica*/
   if (!simplifica_r(r))
   {
-    printf("NULL");
+    printf("NaN");
     return;
   }
-
-  /*testa se o racional é invalido*/
-  if (!valido_r(r))
-    printf("NaN");
   else if (!r->num) /*se numerador = 0 imprime zero 0/5 = 0*/
     printf("0");
   else if (r->den == 1) /*2/1 = 2*/
