@@ -12,7 +12,5 @@ racional.o: racional.c racional.h
 tp3.o: tp3.c racional.h
 	$(CC) -c $(CFLAGS) tp3.c
 
-ll:
-	make clean; clear; make; valgrind --track-origins=yes --leak-check=full ./tp3 <testes/
 clean:
 	rm -f *.o *~ tp3

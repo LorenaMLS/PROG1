@@ -8,7 +8,6 @@
  * funções auxiliares para facilitar a implementação daquelas funções.
  */
 
-/* coloque aqui seus includes (primeiro os <...>, depois os "...") */
 #include <stdio.h>
 #include <stdlib.h>
 #include "racional.h"
@@ -146,7 +145,7 @@ int soma_r(struct racional *r1, struct racional *r2, struct racional *r3)
   {
     multiplo = mmc(r1->den, r2->den);
     /* divide o denominador pelo mmc e multiplica pelo numerador,
-    repetindo com o segundo racional e subtraindo os dois*/
+    repetindo com o segundo racional e somando os dois*/
     r3->num = (multiplo / r1->den * r1->num) + (multiplo / r2->den * r2->num);
     r3->den = multiplo;
   }

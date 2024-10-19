@@ -4,12 +4,10 @@
  * Feito em 24/09/2024 para a disciplina CI1001 - Programação 1.
  */
 
-/* coloque aqui seus includes (primeiro os <...>, depois os "...") */
 #include <stdio.h>
 #include <stdlib.h>
 #include "racional.h"
 
-/* coloque aqui as funções auxiliares que precisar neste arquivo */
 
 /*função que aloca n posições de racionais e retorna 1 sucesso e 0 se falha*/
 int ler_vetor(struct racional **r, long n)
@@ -47,7 +45,7 @@ int imprime_vetor(struct racional **r, long n)
   return 1;
 }
 
-/*função que cria um vetor de ponteiros de ponteiros*/
+/*função que cria um vetor de ponteiros*/
 struct racional **aloca_vetor(long n)
 {
   struct racional **r;
@@ -62,6 +60,7 @@ struct racional **aloca_vetor(long n)
 void destroi_vetor(struct racional **r, long n)
 {
   int i;
+  
   if (!r)
     return;
 
@@ -159,9 +158,11 @@ int soma_tudo(struct racional **r, long n)
 {
   int i;
 
+  /*verifica o ponteiro e se n = 0*/
   if (!r || !n)
     return 0;
 
+  /*soma todos os racionais e guarda na posição 0 do vetor*/
   for (i = 1; i < n; i++)
     soma_r(r[0], r[i], r[0]);
 
@@ -189,6 +190,7 @@ int main()
   printf("VETOR = ");
   imprime_vetor(r, n);
 
+  /*elminina invalidos e imprime */
   printf("VETOR = ");
   n = elimina_invalidos(r, n);
   imprime_vetor(r, n);
@@ -200,12 +202,13 @@ int main()
 
   /*soma racionais e imprime*/
   printf("SOMA = ");
-  if (!soma_tudo(r, n))
-    printf("0");
+  if (!soma_tudo(r, n)) /*caso o vetor estiver vazio imprime zero*/
+    printf("0"); 
   else
     imprime_r(r[0]);
   printf("\n");
 
+  /*destroi o vetor, aponta para Null e imprime*/
   destroi_vetor(r, n);
   printf("VETOR = ");
   imprime_vetor(r, n);
