@@ -46,4 +46,19 @@ int lista_insere (struct lista_t *lst, int item, int pos)
     
 }
 
+int lista_retira (struct lista_t *lst, int *item, int pos)
+{
+    struct lista_t *aux;
 
+    if (pos == -1)
+    {
+
+    }
+    else
+    {
+        aux = lista_procura(lst, item);
+        aux->ult = aux->ult->prox->prox;
+        free(aux);
+        lst->tamanho--;
+    }
+}
