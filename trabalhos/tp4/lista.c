@@ -114,6 +114,7 @@ int lista_retira(struct lista_t *lst, int *item, int pos)
 
     if (!lst && !item)
         return -1;
+
     /*remove se tem um elemento*/
     if (lst->tamanho == 1)
     {
@@ -144,4 +145,84 @@ int lista_retira(struct lista_t *lst, int *item, int pos)
     }
 
     return (lst->tamanho - 1);
+}
+
+int lista_consulta(struct lista_t *lst, int *item, int pos)
+{
+    struct item_t *aux;
+    int i;
+
+    if (!lst && !item)
+        return -1;
+
+    /* se a lista estiver vazia*/
+    if (!lst->prim)
+        return -1;
+
+    /*consulta no fim da lista*/
+    if (pos < 0)
+    {
+        aux = lst->ult;
+    }
+    /*consulta conforme posição dada*/
+    else
+    {
+        aux = lst->prim;
+        for (i = 0; i <= pos; i++)
+            aux = aux->prox;
+    }
+
+    /*informo o valor do item consultado*/
+    *item = aux->valor;
+
+    return lst->tamanho;
+}
+
+int lista_procura(struct lista_t *lst, int valor)
+{
+    struct item_t *aux;
+
+    if (!lst)
+        return -1;
+
+    /*se lista vazia sai*/
+    if (!lst->prim)
+        return -1;
+
+    /*procura a partir do inicio da lista comparando o valor*/
+    else
+    {
+        aux = lst->prim;
+        aux->valor = valor;
+
+        while (!aux || aux->valor != valor)
+            aux = aux->prox;
+    }
+
+    if (aux != NULL)
+        return /*posição*/;
+    else
+        return -1;
+}
+
+int lista_tamanho(struct lista_t *lst)
+{
+    if (!lst)
+        return -1;
+
+    return lst->tamanho;
+}
+
+void lista_imprime(struct lista_t *lst)
+{
+    struct item_t *aux;
+    int i;
+
+    aux = lst->prim;
+    for (i = 0; i < lst->tamanho; i++)
+    {
+        printf("%d", aux->valor);
+        printf(" ");
+        aux = aux->prox;
+    }
 }
