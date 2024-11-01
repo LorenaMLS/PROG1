@@ -16,6 +16,7 @@ struct item_t *item_poteiro_pos(struct lista_t *lst, int pos)
     if (!lst)
         return NULL;
 
+    /*percorre lista e decrementa posição até achar elemento*/
     aux = lst->prim;
     while (aux != NULL && pos != 0)
     {
@@ -23,8 +24,10 @@ struct item_t *item_poteiro_pos(struct lista_t *lst, int pos)
         pos--;
     }
 
+    /*retorna NULL caso não encontre*/
     return aux;
 }
+
 struct lista_t *lista_cria()
 {
     struct lista_t *lst;
@@ -117,9 +120,11 @@ int lista_insere(struct lista_t *lst, int item, int pos)
     {
         aux = item_poteiro_pos(lst, pos);
 
+        /*apontando o prox e ant do novo item*/
         novo_item->prox = aux;
         novo_item->ant = aux->ant;
 
+        /*inserindo entre elementos da lista*/
         aux->ant->prox = novo_item;
         aux->ant = novo_item;
     }
@@ -148,6 +153,7 @@ int lista_retira(struct lista_t *lst, int *item, int pos)
         }
         else
         {
+            /*só faz se aux->prox for diferente de NULL*/
             lst->prim = aux->prox;
             aux->prox->ant = NULL;
         }
@@ -167,6 +173,7 @@ int lista_retira(struct lista_t *lst, int *item, int pos)
         aux->prox->ant = aux->ant;
     }
 
+    /*retorna o valor retirado por referencia*/
     *item = aux->valor;
     item_destroi(aux);
     lst->tamanho--;
@@ -206,7 +213,7 @@ int lista_procura(struct lista_t *lst, int valor)
     if (!lst || !lst->tamanho)
         return -1;
 
-    /*procura a partir do inicio da lista comparando o valor*/
+    /*procura a partir do inicio da lista até achar o valor*/
     else
     {
         aux = lst->prim;
@@ -218,6 +225,7 @@ int lista_procura(struct lista_t *lst, int valor)
         }
     }
 
+    /*se não encontrou elemento retorna -1, caso contrario a posição*/
     if (!aux)
         return -1;
     else
@@ -239,11 +247,18 @@ void lista_imprime(struct lista_t *lst)
     if (!lst)
         return;
 
+    /*enquanto não chegar no final da lista 
+    imprime os elementos*/
     aux = lst->prim;
     while (aux != NULL)
     {
         printf("%d", aux->valor);
-        printf(" ");
         aux = aux->prox;
+        
+        /*garantindo que não imprima um espaço 
+        a mais no final da impressao*/
+        if (aux) 
+            printf(" ");
     }
+    
 }
