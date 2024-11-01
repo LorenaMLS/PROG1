@@ -61,3 +61,4 @@ int lista_tamanho (struct lista_t *lst);
 void lista_imprime (struct lista_t *lst);
 
 #endif
+   

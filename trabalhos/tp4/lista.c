@@ -8,6 +8,23 @@
 #include <stdlib.h>
 #include "lista.h"
 
+/*percorre lista e retorna um ponteiro na posição indicada*/
+struct item_t *item_poteiro_pos(struct lista_t *lst, int pos)
+{
+    struct item_t *aux;
+
+    if (!lst)
+        return NULL;
+
+    aux = lst->prim;
+    while (aux != NULL && pos != 0)
+    {
+        aux = aux->prox;
+        pos--;
+    }
+
+    return aux;
+}
 struct lista_t *lista_cria()
 {
     struct lista_t *lst;
@@ -68,7 +85,6 @@ struct lista_t *lista_destroi(struct lista_t *lst)
 int lista_insere(struct lista_t *lst, int item, int pos)
 {
     struct item_t *novo_item, *aux;
-    int i;
 
     if (!lst)
         return -1;
@@ -76,101 +92,105 @@ int lista_insere(struct lista_t *lst, int item, int pos)
     if (!(novo_item = item_cria(item)))
         return -1;
 
-    /*se a lista estiver vazia*/
-    if (!lst->prim)
+    /*insere se lista vazia*/
+    if (!lst->tamanho)
     {
         lst->prim = novo_item;
         lst->ult = novo_item;
     }
-    /*insere no fim da lista*/
+    /*insere no inicio na lista*/
+    else if (!pos)
+    {
+        novo_item->prox = lst->prim;
+        lst->prim->ant = novo_item;
+        lst->prim = novo_item;
+    }
+    /*insere no final da lista*/
     else if (pos < 0 || pos > lst->tamanho)
     {
         novo_item->ant = lst->ult;
         lst->ult->prox = novo_item;
         lst->ult = novo_item;
     }
-    /*insere conforme a posição dada*/
+    /*insere conforme posição dada*/
     else
     {
-        aux = lst->prim;
-        for (i = 0; i < pos; i++)
-            aux = aux->prox;
+        aux = item_poteiro_pos(lst, pos);
 
         novo_item->prox = aux;
         novo_item->ant = aux->ant;
 
-        /*a ordem importa*/
         aux->ant->prox = novo_item;
         aux->ant = novo_item;
     }
 
-    return (lst->tamanho + 1);
+    lst->tamanho++;
+
+    return lst->tamanho;
 }
 
 int lista_retira(struct lista_t *lst, int *item, int pos)
 {
     struct item_t *aux;
-    int i;
 
-    if (!lst && !item)
+    if (!lst || !item || !lst->tamanho)
         return -1;
 
-    /*remove se tem um elemento*/
-    if (lst->tamanho == 1)
+    /*retira no inicio da lista*/
+    if (!pos)
     {
-        item_destroi(lst->prim);
-        lst->prim = NULL;
-        lst->ult = NULL;
+        /*resolvendo um problema caso lista tenha um elemento*/
+        aux = lst->prim;
+        if (lst->tamanho == 1)
+        {
+            lst->prim = NULL;
+            lst->ult = NULL;
+        }
+        else
+        {
+            lst->prim = aux->prox;
+            aux->prox->ant = NULL;
+        }
     }
-    /*remove no fim da lista*/
+    /*retira no fim da lista*/
     else if (pos < 0 || pos > lst->tamanho)
     {
-        /*aponto o lst->ult pro anterior e destruo ultimo*/
-        lst->ult = lst->ult->ant;
-        item_destroi(lst->ult->prox);
-        lst->ult->prox = NULL;
+        aux = lst->ult;
+        aux->ant->prox = NULL;
+        lst->ult = aux->ant;
     }
-    /*remove conforme posição dada*/
+    /*retira conforme posição dada*/
     else
     {
-        aux = lst->prim;
-        for (i = 0; i < pos; i++)
-            aux = aux->prox;
-
-        /*reapontamentos de itens*/
+        aux = item_poteiro_pos(lst, pos);
         aux->ant->prox = aux->prox;
         aux->prox->ant = aux->ant;
-
-        item_destroi(aux);
     }
 
-    return (lst->tamanho - 1);
+    *item = aux->valor;
+    item_destroi(aux);
+    lst->tamanho--;
+
+    return lst->tamanho;
 }
 
 int lista_consulta(struct lista_t *lst, int *item, int pos)
 {
     struct item_t *aux;
-    int i;
 
-    if (!lst && !item)
+    if (!lst || !item)
         return -1;
 
     /* se a lista estiver vazia*/
-    if (!lst->prim)
+    if (!lst->prim || pos > lst->tamanho - 1)
         return -1;
 
     /*consulta no fim da lista*/
     if (pos < 0)
-    {
         aux = lst->ult;
-    }
     /*consulta conforme posição dada*/
     else
-    {
-        aux = lst->prim;
-        for (i = 0; i <= pos; i++)
-            aux = aux->prox;
-    }
+        aux = item_poteiro_pos(lst, pos);
 
     /*informo o valor do item consultado*/
     *item = aux->valor;
@@ -181,28 +201,27 @@ int lista_consulta(struct lista_t *lst, int *item, int pos)
 int lista_procura(struct lista_t *lst, int valor)
 {
     struct item_t *aux;
+    int pos;
 
-    if (!lst)
-        return -1;
-
-    /*se lista vazia sai*/
-    if (!lst->prim)
+    if (!lst || !lst->tamanho)
         return -1;
 
     /*procura a partir do inicio da lista comparando o valor*/
     else
     {
         aux = lst->prim;
-        aux->valor = valor;
-
-        while (!aux || aux->valor != valor)
+        pos = 0;
+        while (aux != NULL && aux->valor != valor)
+        {
             aux = aux->prox;
+            pos++;
+        }
     }
 
-    if (aux != NULL)
-        return /*posição*/;
-    else
+    if (!aux)
         return -1;
+    else
+        return pos;
 }
 
 int lista_tamanho(struct lista_t *lst)
@@ -216,10 +235,12 @@ int lista_tamanho(struct lista_t *lst)
 void lista_imprime(struct lista_t *lst)
 {
     struct item_t *aux;
-    int i;
+
+    if (!lst)
+        return;
 
     aux = lst->prim;
-    for (i = 0; i < lst->tamanho; i++)
+    while (aux != NULL)
     {
         printf("%d", aux->valor);
         printf(" ");
