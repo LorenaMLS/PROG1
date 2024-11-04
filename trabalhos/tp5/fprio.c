@@ -53,9 +53,10 @@ struct fprio_t *fprio_destroi(struct fprio_t *f)
 
     if (!f)
         return NULL;
-
-    else if (f->num == 1)
-        fprio_destroi(f->prim);
+    /*destroi se tiver um elemento*/
+    if (f->num == 1)
+        fpnodo_destroi(f->prim);
+    /*destroi se a lista for maior que 1*/
     else if (f->num > 1)
     {
         aux = f->prim;
@@ -63,15 +64,76 @@ struct fprio_t *fprio_destroi(struct fprio_t *f)
 
         while (aux2 != NULL)
         {
-            fprio_destroi(aux);
+            fpnodo_destroi(aux);
             aux = aux2;
             aux2 = aux2->prox;
         }
-        fprio_destroi(aux);
+        fpnodo_destroi(aux);
     }
 
     free(f);
     f = NULL;
 
     return NULL;
+}
+
+/*função que atribui os valores para o novo nodo*/
+int fpnodo_atribui(struct fpnodo_t *nodo, void *item, int tipo, int prio)
+{
+    if (!nodo || !item)
+        return 0;
+
+    nodo->item = item;
+    nodo->tipo = tipo;
+    nodo->prio = prio;
+
+    return 1;
+}
+
+int fprio_insere(struct fprio_t *f, void *item, int tipo, int prio)
+{
+    struct fpnodo_t *novo_nodo, *aux, *aux2;
+
+    if (!f || !item)
+        return -1;
+
+    novo_nodo = fpnodo_cria();
+    if (!fpnodo_atribui(novo_nodo, item, tipo, prio))
+        return -1;
+
+    if (!f->num)
+        f->prim = novo_nodo;
+
+    /*se a lista tiver um elemento só e com prioridade menor*/
+    else if (novo_nodo->prio > f->prim->prio)
+    {
+        novo_nodo->prox = f->prim;
+        f->prim = novo_nodo;
+    }
+    else 
+    {
+        aux = f->prim->prox;
+        aux2 = aux->prox;
+        while (aux2 != NULL || aux2->prio > novo_nodo->prio )
+        {
+
+
+        }
+    }
+
+        return 0;
+}
+
+void *fprio_retira(struct fprio_t *f, int *tipo, int *prio)
+{
+    return NULL;
+}
+
+int fprio_tamanho(struct fprio_t *f)
+{
+    return 0;
+}
+
+void fprio_imprime(struct fprio_t *f)
+{
 }
