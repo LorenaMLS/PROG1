@@ -48,26 +48,27 @@ struct fpnodo_t *fpnodo_destroi(struct fpnodo_t *nodo)
 
 struct fprio_t *fprio_destroi(struct fprio_t *f)
 {
-    struct fpnodo_t *aux, *aux2;
+    struct fpnodo_t *aux_ant, *aux_prox;
 
     if (!f)
         return NULL;
+
     /*destroi se tiver um elemento*/
     if (f->num == 1)
         fpnodo_destroi(f->prim);
     /*destroi se a lista for maior que 1*/
     else if (f->num > 1)
     {
-        aux = f->prim;
-        aux2 = f->prim->prox;
+        aux_ant = f->prim;
+        aux_prox = f->prim->prox;
 
-        while (aux2 != NULL)
+        while (aux_prox != NULL)
         {
-            fpnodo_destroi(aux);
-            aux = aux2;
-            aux2 = aux2->prox;
+            fpnodo_destroi(aux_ant);
+            aux_ant = aux_prox;
+            aux_prox = aux_prox->prox;
         }
-        fpnodo_destroi(aux);
+        fpnodo_destroi(aux_ant);
     }
 
     free(f);
@@ -81,8 +82,10 @@ int fpnodo_compara(struct fpnodo_t *nodo1, struct fpnodo_t *nodo2)
     if (!nodo1 || !nodo2)
         return 0;
 
+    /*compara se os dois nodos são exatamente iguais*/
     if (nodo1->item == nodo2->item && nodo1->tipo == nodo2->tipo && nodo1->prio == nodo2->prio)
         return 1;
+        
     return 0;
 }
 
@@ -114,7 +117,7 @@ int fprio_insere(struct fprio_t *f, void *item, int tipo, int prio)
         novo_nodo->prox = f->prim;
         f->prim = novo_nodo;
     }
-    /*insere com prioridade menor ou igual*/
+    /*insere com prioridade menor e compara se tem elementos iguais*/
     else
     {
         aux_ant = f->prim;
@@ -189,6 +192,7 @@ void fprio_imprime(struct fprio_t *f)
         printf("%d %d", aux->tipo, aux->prio);
         printf(")");
 
+        /*condição para não dar espaço no final da fila*/
         if (aux->prox)
             printf(" ");
 
