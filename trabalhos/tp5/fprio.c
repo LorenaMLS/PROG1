@@ -85,7 +85,7 @@ int fpnodo_compara(struct fpnodo_t *nodo1, struct fpnodo_t *nodo2)
     /*compara se os dois nodos são exatamente iguais*/
     if (nodo1->item == nodo2->item && nodo1->tipo == nodo2->tipo && nodo1->prio == nodo2->prio)
         return 1;
-        
+
     return 0;
 }
 
@@ -104,16 +104,21 @@ int fprio_insere(struct fprio_t *f, void *item, int tipo, int prio)
     if (!f->num)
         f->prim = novo_nodo;
 
-
-    /*insere elemento com prioridade maior no inicio da fila*/
-    else if (novo_nodo->prio <= f->prim->prio)
+    /*se tiver a prioridade igual insere conforme FIFO*/
+    else if (novo_nodo->prio == f->prim->prio)
     {
         if (fpnodo_compara(novo_nodo, f->prim))
         {
             fpnodo_destroi(novo_nodo);
             return -1;
         }
+        novo_nodo->prox = f->prim->prox;
+        f->prim->prox = novo_nodo;
+    }
 
+    /*insere elemento com prioridade maior no inicio da fila*/
+    else if (novo_nodo->prio < f->prim->prio)
+    {
         novo_nodo->prox = f->prim;
         f->prim = novo_nodo;
     }
