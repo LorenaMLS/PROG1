@@ -44,31 +44,31 @@ struct missao_t
 struct mundo_t
 {
     unsigned int num_herois;
-    struct heroi_t *heroi; // vetor representando todos os heróis
+    struct heroi_t *heroi;
 
     unsigned int num_base;
-    struct base_t *base; // vetor representando todas as bases
+    struct base_t *base;
 
     unsigned int num_missao;
-    struct missao_t *missao; // vetor representando todas as missões
+    struct missao_t *missao; 
 
     unsigned int num_habilidades;
-    struct cordenadas_t tam_mundo;
+    struct cordenadas_t tam;
     unsigned int relogio;
 };
 
 /*Retorna um inteiro aleatório entre min e max*/
 int gera_aleat(int min, int max);
 
-struct heroi_t *cria_herois ();
+struct heroi_t *cria_herois (unsigned int num_herois);
 
 struct heroi_t *destroi_herois (struct heroi_t *heroi);
 
-struct base_t *cria_base ();
+struct base_t *cria_base (struct mundo_t *mundo);
 
 struct base_t *destroi_base (struct base_t *base);
 
-struct missao_t *cria_missao ();
+struct missao_t *cria_missao (unsigned int num_missao);
 
 struct missao_t *destroi_missao (struct missao_t *missao);
 

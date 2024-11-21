@@ -5,16 +5,13 @@
 #include "conjunto.h"
 #include "entidades.h"
 
-
-
-
 int gera_aleat(int min, int max)
 {
     /*Gera um numero aleatorio entre min e max*/
     return (rand() % (max - min + 1)) + min;
 }
 
-struct heroi_t *cria_herois (unsigned int num_herois)
+struct heroi_t *cria_herois(unsigned int num_herois)
 {
     struct heroi_t *vet_heroi;
     int i;
@@ -35,13 +32,34 @@ struct heroi_t *cria_herois (unsigned int num_herois)
     return vet_heroi;
 }
 
-struct heroi_t *destroi_herois (struct heroi_t *heroi)
+struct heroi_t *destroi_herois(struct heroi_t *heroi)
 {
     if (!heroi)
         return NULL;
-    
-    free (heroi);
+
+    free(heroi);
     heroi = NULL;
 
     return heroi;
+}
+
+struct base_t *cria_base (struct mundo_t *mundo)
+{
+    struct base_t *base;
+    int i;
+
+    if (!(base = malloc(sizeof(struct base_t))))
+        return NULL;
+    
+    for (i = 0; i < mundo->num_base; i++)
+    {
+        base->id_base = i;
+        base->lotação = gera_aleat(3, 10);
+        base->presentes = cjto_cria(mundo->num_base);
+        base->espera = fprio_cria();
+        base->local = gera_aleat(0, mundo->tam - 1); /*rever gera_aleat*/
+        
+    }
+
+    return base;
 }
