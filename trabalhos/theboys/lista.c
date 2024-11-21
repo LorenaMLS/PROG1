@@ -1,6 +1,5 @@
 // TAD lista de números inteiros
-// Carlos Maziero - DINF/UFPR, Out 2024
-//
+
 
 #include <stdio.h>
 #include <stdlib.h>
