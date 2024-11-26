@@ -42,6 +42,9 @@ tgz: clean
 	rm -rf /tmp/$(USER)
 	@echo "Arquivo $(ENTREGA).tgz criado para entrega"
 
+ll:
+	make clean; clear; make
+
 # limpar arquivos temporários
 clean:
 	rm -f *~ $(OBJ) $(MAIN) /tmp/$(USER)/$(ENTREGA) $(ENTREGA).tgz

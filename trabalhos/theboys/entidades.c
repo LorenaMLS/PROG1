@@ -5,7 +5,6 @@
 #include "conjunto.h"
 #include "entidades.h"
 
-
 int gera_aleat(int min, int max)
 {
     /*Gera um numero aleatorio entre min e max*/
@@ -20,6 +19,7 @@ struct heroi_t *cria_herois(struct mundo_t *mundo)
     if (!mundo)
         NULL;
 
+    
     if (!(vet_heroi = malloc(sizeof(struct heroi_t) * mundo->num_herois)))
         return NULL;
 
@@ -33,7 +33,7 @@ struct heroi_t *cria_herois(struct mundo_t *mundo)
         vet_heroi[i].habilidades = cjto_cria(gera_aleat(1, 3));
     }
 
-    return mundo->heroi = vet_heroi;
+    return vet_heroi;
 }
 
 struct heroi_t *destroi_herois(struct mundo_t *mundo)
@@ -42,6 +42,9 @@ struct heroi_t *destroi_herois(struct mundo_t *mundo)
 
     if (!mundo)
         return NULL;
+
+    if (!mundo->heroi)
+    return NULL;
 
     /*destroi o conjundo de habilidades do heroi*/
     for (i = 0; i < mundo->num_herois; i++)
@@ -74,7 +77,7 @@ struct base_t *cria_base(struct mundo_t *mundo)
         base[i].local.y = gera_aleat(0, N_TAMANHO_MUNDO - 1);
     }
 
-    return mundo->base = base;
+    return base;
 }
 
 struct base_t *destroi_base(struct mundo_t *mundo)
@@ -98,53 +101,53 @@ struct base_t *destroi_base(struct mundo_t *mundo)
     return mundo->base;
 }
 
-struct missao_t *cria_missao (struct mundo_t *mundo)
+struct missao_t *cria_missao(struct mundo_t *mundo)
 {
     struct missao_t *missao;
     int i;
 
     if (!mundo)
         return NULL;
-    
+
     if (!(missao = malloc(sizeof(struct missao_t) * mundo->num_missao)))
         return NULL;
-    
+
     for (i = 0; i < mundo->num_missao; i++)
     {
         missao[i].id = i;
-        missao[i].perigo = gera_aleat(0,100);
+        missao[i].perigo = gera_aleat(0, 100);
         missao[i].habilidades = cjto_aleat(6, 10);
         missao[i].local.x = gera_aleat(0, N_TAMANHO_MUNDO - 1);
         missao[i].local.y = gera_aleat(0, N_TAMANHO_MUNDO - 1);
     }
 
-    return mundo->missao = missao;
+    return missao;
 }
 
-struct missao_t *destroi_missao (struct mundo_t *mundo)
+struct missao_t *destroi_missao(struct mundo_t *mundo)
 {
     int i;
 
     if (!mundo)
         return NULL;
-    
+
     /*destroi o cojunto de habilidades nescessarias para a missão*/
-    for (i = 0; i < mundo->num_habilidades; i++)
+    for (i = 0; i < mundo->num_missao; i++)
         cjto_destroi(mundo->missao[i].habilidades);
-    
+
     free(mundo->missao);
     mundo->missao = NULL;
 
     return mundo->missao;
 }
 
-struct mundo_t *cria_mundo ()
+struct mundo_t *cria_mundo()
 {
     struct mundo_t *mundo;
 
     if (!(mundo = malloc(sizeof(struct mundo_t))))
         return NULL;
-    
+
     mundo->relogio.inicio = T_INICIO;
     mundo->relogio.fim = T_FIM_DO_MUNDO;
     mundo->tam.x = N_TAMANHO_MUNDO;
@@ -154,18 +157,18 @@ struct mundo_t *cria_mundo ()
     mundo->num_base = mundo->num_herois / 5;
     mundo->num_missao = T_FIM_DO_MUNDO / 100;
 
-    cria_base(mundo);
-    cria_missao(mundo);
-    cria_herois(mundo);
+    mundo->base = cria_base(mundo);
+    mundo->missao = cria_missao(mundo);
+    mundo->heroi = cria_herois(mundo);
 
     return mundo;
 }
 
-struct mundo_t *destroi_mundo (struct mundo_t *mundo)
+struct mundo_t *destroi_mundo(struct mundo_t *mundo)
 {
-    if(!mundo)
+    if (!mundo)
         return NULL;
-    
+
     destroi_base(mundo);
     destroi_missao(mundo);
     destroi_herois(mundo);

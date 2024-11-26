@@ -22,6 +22,7 @@ struct heroi_t
     struct cjto_t *habilidades; /*habilidades do heroi*/
 };
 
+/*cordenadas do mundo no plano cartesiano*/
 struct cordenadas_t
 {
     unsigned int x;
@@ -49,6 +50,7 @@ struct missao_t
     struct cjto_t *habilidades; /*hablidades nescessarias*/
 };
 
+/*tempo do mundo*/
 struct tempo_t
 {
     unsigned int inicio;
@@ -79,19 +81,34 @@ int gera_aleat(int min, int max);
 /*retorno: um ponteiro do vetor criado ou NULL se erro*/
 struct heroi_t *cria_herois (struct mundo_t *mundo);
 
-/**/
+/*destroi a estrutuda de dados do vetor de herois,
+inclusive o conjunto de habilidades*/
+/*retorno NULL*/
 struct heroi_t *destroi_herois (struct mundo_t *mundo);
 
+/*cria a base com suas especificações*/
+/*retorno: um ponteiro da base criada ou NULL se erro*/
 struct base_t *cria_base (struct mundo_t *mundo);
 
+/*destroi a estrutuda de dados da base*/
+/*retorno NULL*/
 struct base_t *destroi_base (struct mundo_t *mundo);
 
+/*cria as missões*/
+/*retorno: um ponteiro para o vetor de missões ou NULL se erro*/
 struct missao_t *cria_missao (struct mundo_t *mundo);
 
+/*destroi a estrutuda de dados do vetor de missões,
+inclusive o conjunto de habilidades*/
+/*retorno NULL*/
 struct missao_t *destroi_missao (struct mundo_t *mundo);
 
+/*função que cria o mundo com suas especificações */
+/*retorno: um ponteiro do mundo criado ou NULL se erro*/
 struct mundo_t *cria_mundo ();
 
+/*destroi a estrutuda de dados do mundo*/
+/*retorno NULL*/
 struct mundo_t *destroi_mundo (struct mundo_t *mundo);
 
 #endif

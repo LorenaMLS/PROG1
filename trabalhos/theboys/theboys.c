@@ -27,24 +27,15 @@ int main()
 
   printf("mundo criado\n");
 
-  mundo->heroi = cria_herois(mundo);
-
-  if (!mundo->heroi)
-    printf("herois não criados\n");
-
-  printf("herois criados\n");
-
-  mundo->heroi = destroi_herois(mundo);
-  
-  if (!mundo->heroi)
-    printf("ERRO: herois não destruidos\n");
-
-  printf("herois destruidos\n");
-
-  mundo = destroi_mundo(mundo);
   // executar o laço de simulação
 
   // destruir o mundo
+  destroi_mundo(mundo);
+
+  if (!mundo)
+    printf("erro\n");
+  
+  printf("mundo destruido\n");
 
   return 0;
 }
