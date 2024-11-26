@@ -16,28 +16,32 @@
 // programa principal
 int main()
 {
-  struct heroi_t *heroi;
+  struct mundo_t *mundo;
+
   // iniciar o mundo
 
-  heroi = cria_herois(2);
+  mundo = cria_mundo();
 
-  if (!heroi)
-  {
-    printf("heroi não criado\n");
-    return 0;
-  }
+  if (!mundo)
+    printf("mundo nao criado\n");
 
-  printf("heroi criado\n");
+  printf("mundo criado\n");
 
-  heroi = destroi_herois(heroi);
+  mundo->heroi = cria_herois(mundo);
 
-  if (!heroi)
-  {
-    printf("heroi não destruido\n");
-    return 0;
-  }
+  if (!mundo->heroi)
+    printf("herois não criados\n");
 
-  printf("heroi destuido");
+  printf("herois criados\n");
+
+  mundo->heroi = destroi_herois(mundo);
+  
+  if (!mundo->heroi)
+    printf("ERRO: herois não destruidos\n");
+
+  printf("herois destruidos\n");
+
+  mundo = destroi_mundo(mundo);
   // executar o laço de simulação
 
   // destruir o mundo
