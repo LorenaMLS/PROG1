@@ -18,20 +18,21 @@ int main()
 {
   struct mundo_t *mundo;
   int i;
-  // iniciar o mundo
 
+  // iniciar o mundo
+  srand(0);
   mundo = cria_mundo();
 
   if (!mundo)
-    printf("mundo nao criado\n");
+    printf("MUNDO NÃO CRIADO\n");
 
-  printf("mundo criado\n");
+  printf("MUNDO CRIADO\n");
 
   /*status dos herois criados*/
-  printf("HEROIS\n\n");
-  printf("quantidade de herois criados: %d\n", mundo->num_herois);
   for (i = 0; i < mundo->num_herois; i++)
   {
+    printf("HEROIS\n");
+    printf("quantidade de herois criados: %d\n", mundo->num_herois);
     printf("heroi id: %d\n", mundo->heroi[i].id);
 
     /*habilidades do heroi*/
@@ -45,11 +46,12 @@ int main()
     printf("heroi paciencia: %d\n", mundo->heroi[i].paciencia);
     printf("heroi velocidade: %d\n", mundo->heroi[i].velocidade);
     printf("heroi id base: %d\n", mundo->heroi[i].id_base);
-    printf("HEROIS\n\n");
   }
 
+  printf("\n\n");
+
   /*status da base criada*/
-  printf("BASE\n\n");
+  printf("BASE\n");
   printf("base num: %d\n", mundo->num_base);
   printf("base id: %d\n", mundo->base->id_base);
   printf("base local x: %d\n", mundo->base->local.x);
@@ -65,27 +67,26 @@ int main()
   fprio_imprime(mundo->base->espera); */
 
   /*status das missões criadas*/
-  printf("MISSÕES\n\n");
-  printf("missao num: %d\n", mundo->num_missao);
-  for (i = 0; i < mundo->num_missao; i++)
-  {
-    printf("missao id: %d\n", mundo->missao[i].id);
-    printf("missao perigo: %d\n", mundo->missao[i].perigo);
-    printf("missao local x: %d\n", mundo->missao[i].local.x);
-    printf("missao local y: %d\n", mundo->missao[i].local.y);
+    printf("MISSÕES\n\n");
+    printf("missao num: %d\n", mundo->num_missao);
+    for (i = 0; i < mundo->num_missao; i++)
+    {
+      printf("missao id: %d\n", mundo->missao[i].id);
+      printf("missao perigo: %d\n", mundo->missao[i].perigo);
+      printf("missao local x: %d\n", mundo->missao[i].local.x);
+      printf("missao local y: %d\n", mundo->missao[i].local.y);
 
-    /*habilidades da missao*/
-    printf("missao habilidades cap: %d\n", mundo->missao[i].habilidades->cap);
-    printf("missao habilidades num: %d\n", mundo->missao[i].habilidades->num);
-    printf("CONJUNTO DE HAB MISSAO: ");
-    cjto_imprime(mundo->missao[i].habilidades);
-    printf("\n");
-  }
+      printf("missao habilidades cap: %d\n", mundo->missao[i].habilidades->cap);
+      printf("missao habilidades num: %d\n", mundo->missao[i].habilidades->num);
+      printf("CONJUNTO DE HAB MISSAO: ");
+      cjto_imprime(mundo->missao[i].habilidades);
+      printf("\n");
+    } 
 
-  mundo = destroi_mundo(mundo);
   // executar o laço de simulação
 
   // destruir o mundo
+  mundo = destroi_mundo(mundo);
 
   return 0;
 }
