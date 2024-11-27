@@ -36,7 +36,7 @@ struct base_t
     int lotação; /*quantidade de pessoas na base*/
     struct cordenadas_t local; /*local da base*/
 
-    struct cjto_t *presentes; /*identifica quantos herois há n base*/
+    struct cjto_t *presentes; /*identifica quantos herois há na base*/
     struct fprio_t *espera; /*fila de espera de herois*/
 };
 

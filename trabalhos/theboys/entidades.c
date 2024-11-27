@@ -14,12 +14,11 @@ int gera_aleat(int min, int max)
 struct heroi_t *cria_herois(struct mundo_t *mundo)
 {
     struct heroi_t *vet_heroi;
-    int i;
+    int i, habilidade;
 
     if (!mundo)
-        NULL;
+        return NULL;
 
-    
     if (!(vet_heroi = malloc(sizeof(struct heroi_t) * mundo->num_herois)))
         return NULL;
 
@@ -30,7 +29,14 @@ struct heroi_t *cria_herois(struct mundo_t *mundo)
         vet_heroi[i].id_base = 0;
         vet_heroi[i].paciencia = gera_aleat(0, 100);
         vet_heroi[i].velocidade = gera_aleat(50, 5000);
-        vet_heroi[i].habilidades = cjto_cria(gera_aleat(1, 3));
+        vet_heroi[i].habilidades = cjto_cria(gera_aleat(1, 3));/*cria conjunto com cap de 1 até 3*/
+
+        /*insere as habilidades no conjunto*/
+        while (vet_heroi[i].habilidades->num < vet_heroi[i].habilidades->cap)
+        {
+           habilidade = gera_aleat(0, N_HABILIDADES); 
+           cjto_insere(vet_heroi[i].habilidades,habilidade);
+        } 
     }
 
     return vet_heroi;
@@ -71,10 +77,10 @@ struct base_t *cria_base(struct mundo_t *mundo)
     {
         base[i].id_base = i;
         base[i].lotação = gera_aleat(3, 10);
-        base[i].presentes = cjto_cria(mundo->num_base);
-        base[i].espera = fprio_cria();
         base[i].local.x = gera_aleat(0, N_TAMANHO_MUNDO - 1);
         base[i].local.y = gera_aleat(0, N_TAMANHO_MUNDO - 1);
+        base[i].presentes = cjto_cria(mundo->base->lotação);/*averiguar*/
+        base[i].espera = fprio_cria();
     }
 
     return base;
@@ -104,7 +110,7 @@ struct base_t *destroi_base(struct mundo_t *mundo)
 struct missao_t *cria_missao(struct mundo_t *mundo)
 {
     struct missao_t *missao;
-    int i;
+    int i, habilidade;
 
     if (!mundo)
         return NULL;
@@ -116,9 +122,17 @@ struct missao_t *cria_missao(struct mundo_t *mundo)
     {
         missao[i].id = i;
         missao[i].perigo = gera_aleat(0, 100);
-        missao[i].habilidades = cjto_aleat(6, 10);
         missao[i].local.x = gera_aleat(0, N_TAMANHO_MUNDO - 1);
         missao[i].local.y = gera_aleat(0, N_TAMANHO_MUNDO - 1);
+
+        missao[i].habilidades = cjto_cria(gera_aleat(6, 10));/*cria conjunto com cap de 6 até 10*/
+
+        /*insere as habilidades no conjunto*/
+        while (missao[i].habilidades->num < missao[i].habilidades->cap)
+        {
+           habilidade = gera_aleat(0, N_HABILIDADES); 
+           cjto_insere(missao[i].habilidades,habilidade);
+        } 
     }
 
     return missao;
