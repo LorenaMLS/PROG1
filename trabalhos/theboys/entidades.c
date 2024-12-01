@@ -179,7 +179,8 @@ struct mundo_t *cria_mundo()
     mundo->num_base = (mundo->num_herois / 5) + 1;
     mundo->num_missao = T_FIM_DO_MUNDO / 100;
 
-    /*cria base, missao e herois*/
+    /*cria prio, base, missao e herois*/
+    mundo->fprio_eventos = fprio_cria();
     mundo->base = cria_base(mundo);
     mundo->missao = cria_missao(mundo);
     mundo->heroi = cria_herois(mundo);
@@ -192,6 +193,7 @@ struct mundo_t *destroi_mundo(struct mundo_t *mundo)
     if (!mundo)
         return NULL;
 
+    fprio_destroi(mundo->fprio_eventos);
     destroi_base(mundo);
     destroi_missao(mundo);
     destroi_herois(mundo);

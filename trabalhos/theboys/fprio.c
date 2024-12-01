@@ -37,6 +37,9 @@ struct fpnodo_t *fpnodo_destroi(struct fpnodo_t *nodo)
     if (!nodo)
         return NULL;
 
+    if (nodo->item)
+        free(nodo->item);
+        
     free(nodo);
     nodo = NULL;
 
