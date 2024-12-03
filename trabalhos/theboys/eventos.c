@@ -57,7 +57,7 @@ int evento_chega(struct mundo_t *mundo, unsigned int tempo, unsigned int id_hero
     else
         evento = evento_cria(EV_DESISTE, tempo, id_heroi, id_base);
 
-    /*insere na fila de espera o evento*/
+    /*insere na fila de eventos*/
     fprio_insere(mundo->fprio_eventos, evento, 0, 0);
 
     return 1;
@@ -77,7 +77,7 @@ int evento_espera(struct mundo_t *mundo, unsigned int tempo, unsigned int id_her
     if (!(evento = evento_cria(EV_AVISA, tempo, id_heroi, id_base)))
         return 0;
 
-    /*insere na fila de espera o evento*/
+    /*insere na fila de eventos*/
     fprio_insere(mundo->fprio_eventos, evento, 0, 0);
 
     return 1;
@@ -98,7 +98,7 @@ int evento_desiste(struct mundo_t *mundo, unsigned int tempo, unsigned int id_he
     if (!(evento = evento_cria(EV_VIAJA, tempo, id_heroi, base_destino)))
         return 0;
 
-    /*insere na fila de espera o evento*/
+    /*insere na fila de eventos*/
     fprio_insere(mundo->fprio_eventos, evento, 0, 0);
 
     return 1;
@@ -125,7 +125,7 @@ int evento_avisa(struct mundo_t *mundo, unsigned int tempo, unsigned int id_hero
         if (!(evento = evento_cria(EV_ENTRA, tempo, id_heroi, id_base)))
             return 0;
 
-        /*insere na fila de espera o evento*/
+        /*insere na fila de eventos*/
         fprio_insere(mundo->fprio_eventos, evento, 0, 0);
     }
 
@@ -135,9 +135,96 @@ int evento_avisa(struct mundo_t *mundo, unsigned int tempo, unsigned int id_hero
 int evento_entra(struct mundo_t *mundo, unsigned int tempo, unsigned int id_heroi, unsigned int id_base)
 {
     struct evento_t *evento;
+    int tpb;
+
+    if (!mundo)
+        return 0;
+
+    /*calcula o tempo de permanência do heroi na base*/
+    tpb = ((mundo->heroi[id_heroi].paciencia * gera_aleat(1, 20)) + 15);
+
+    /*testa e cria evento SAI*/
+    if (!(evento = evento_cria(EV_SAI, tpb + tempo, id_heroi, id_base)))
+        return 0;
+
+    /*insere na fila de eventos*/
+    fprio_insere(mundo->fprio_eventos, evento, 0, 0);
+
+    return 1;
+}
+
+int evento_sai(struct mundo_t *mundo, unsigned int tempo, unsigned int id_heroi, unsigned int id_base)
+{
+    struct evento_t *evento;
+    int base_destino;
+
+    if (!mundo)
+        return 0;
+
+    /*retira o heroi do conjunto de presentes da base*/
+    if (!(cjto_retira(mundo->base[id_base].presentes, id_heroi)))
+        return 0;
+
+    /*gera uma base aleatoria de destino*/
+    base_destino = gera_aleat(0, mundo->base - 1);
+
+    /*testa, cria e insere o evento VIAJA */
+    if (evento = evento_cria(EV_VIAJA, tempo, id_heroi, base_destino))
+        fprio_insere(mundo->fprio_eventos, evento, 0, 0);
+    else 
+        return 0;
+
+    /*testa, cria e insere evento AVISA*/
+    if (evento = evento_cria(EV_AVISA, tempo, id_heroi, id_base))
+        fprio_insere(mundo->fprio_eventos, evento, 0, 0);
+    else
+        return 0;
+
+    return 1;
+}
+
+int evento_viaja(struct mundo_t *mundo, unsigned int tempo, unsigned int id_heroi, unsigned int id_base)
+{
+    struct evento_t *evento;
+    struct cordenadas_t *distancia, *base_destino;
+    int duracao;
+
+    if (!mundo)
+        return 0;
+
+    /*gera uma base aleatoria de destino*/
+    base_destino->x = gera_aleat(0, mundo->base - 1);
+    base_destino->y = gera_aleat(0, mundo->base - 1);
+
+    /*calcula a distancia entre a base do heroi e a proxima*/
+    distancia->x = (mundo->base[id_base].local.x - base_destino->x);
+    distancia->y = (mundo->base[id_base].local.y - base_destino->y);
+
+    /*calcula a duração que o heroi leva até chegar na proxima base*/
+    duracao = ((distancia->x + distancia->y) / mundo->heroi[id_heroi].velocidade);
+
+    /*teste e cria evento CHEGA*/
+    if (!(evento = evento_cria(EV_CHEGA, tempo + duracao, id_heroi, id_base)));
+        return 0;
+    
+    /*insere na fila de eventos*/
+    fprio_insere(mundo->fprio_eventos, evento, 0, 0);
+
+    return 1;
+}
+
+int evento_morre(struct mundo_t *mundo, unsigned int tempo, unsigned int id_heroi, unsigned int id_base)
+{
+    struct evento_t *evento;
 
     if (!mundo)
         return 0;
     
+    /*retira o heroi do conjunto de herois da base*/
+    if (!cjto_retira(mundo->base[id_base].presentes, id_heroi));
+        return 0;
     
+    if (!(evento = evento_cria(EV_AVISA, tempo, 0, id_base))) /*averiguar evento_avisa*/
+
+    return 1;
 }
