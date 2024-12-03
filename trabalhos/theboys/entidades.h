@@ -113,10 +113,13 @@ struct mundo_t *cria_mundo();
 /*retorno NULL*/
 struct mundo_t *destroi_mundo(struct mundo_t *mundo);
 
+/*função que imprime os status do heroi*/
 void heroi_imprime(struct mundo_t *mundo);
 
+/*função qe imprime o status da base*/
 void base_imprime(struct mundo_t *mundo);
 
+/*função que imprime os status da missao*/
 void missao_imprime(struct mundo_t *mundo);
 
 #endif

@@ -39,13 +39,18 @@ struct evento_t *evento_destroi (struct evento_t *evento);
 /*retorno: 1 se sucesso ou 0 se erro*/
 int evento_chega(struct mundo_t *mundo, unsigned int tempo, unsigned int id_heroi, unsigned int id_base);
 
+/*O herói H entra na fila de espera da base B. Assim que H entrar na fila,
+ o porteiro da base B deve ser avisado para verificar a fila*/
+/*retorno: 1 se sucesso ou 0 se erro*/
+int evento_espera(struct mundo_t *mundo, unsigned int tempo, unsigned int id_heroi, unsigned int id_base);
+
 /*herói H desiste de entrar na base B, escolhe uma base aleatória D e viaja para lá*/
 /*retorno: 1 se sucesso ou 0 se erro*/
 int evento_desiste(struct mundo_t *mundo, unsigned int tempo, unsigned int id_heroi, unsigned int id_base);
 
 /*Porteiro da base B trata a fila de espera*/
 /*retorno: 1 se sucesso ou 0 se erro*/
-int evento_avisa(struct mundo_t *mundo, unsigned int tempo, unsigned int id_base);
+int evento_avisa(struct mundo_t *mundo, unsigned int tempo, unsigned int id_heroi, unsigned int id_base);
 
 /*Herói H entra na base B. Ao entrar, o herói decide quanto tempo vai ficar e agenda sua saída da base*/
 /*retorno: 1 se sucesso ou 0 se erro*/
