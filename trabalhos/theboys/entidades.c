@@ -32,7 +32,8 @@ struct heroi_t *cria_herois(struct mundo_t *mundo)
         vet_heroi[i].paciencia = gera_aleat(0, 100);
         vet_heroi[i].velocidade = gera_aleat(50, 5000);
         vet_heroi[i].habilidades = cjto_cria(gera_aleat(1, 3)); /*cria conjunto com cap de 1 até 3*/
-
+        vet_heroi[i].status = 1;
+        
         /*insere as habilidades no conjunto*/
         while (vet_heroi[i].habilidades->num < vet_heroi[i].habilidades->cap)
         {

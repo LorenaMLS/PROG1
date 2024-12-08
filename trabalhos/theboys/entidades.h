@@ -17,6 +17,7 @@ struct heroi_t
     unsigned int paciencia;
     unsigned int velocidade;
     unsigned int experiencia;
+    int status; /*status do heroi; vivo = 1, morto = - 1*/
     int id_base; /* referencia onde esta localizado o heroi*/
 
     struct cjto_t *habilidades; /*habilidades do heroi*/
