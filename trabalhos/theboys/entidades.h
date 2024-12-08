@@ -35,7 +35,7 @@ struct cordenadas_t
 struct base_t
 {
     unsigned int id_base;      /*identificação da base*/
-    unsigned int lotação;      /*quantidade de pessoas na base*/
+    unsigned int lotacao;      /*quantidade de pessoas na base*/
     struct cordenadas_t local; /*local da base*/
 
     struct cjto_t *presentes; /*identifica quantos herois há na base*/

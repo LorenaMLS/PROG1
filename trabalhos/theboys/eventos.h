@@ -80,4 +80,12 @@ int evento_missao(struct mundo_t *mundo, unsigned int tempo, unsigned int id_mis
 /*retorno: 1 se sucesso ou 0 se erro*/
 int evento_fim(struct mundo_t *mundo, unsigned int tempo);
 
+/*Função responsável por tratar o inicio da simulação .*/
+/*retorno: 1 se sucesso ou 0 se erro*/
+int evento_inicia(struct mundo_t *mundo);
+
+/*Função responsável por selecionar o evento que vai ser tratado .*/
+/*retorno: 1 se sucesso ou 0 se erro*/
+int evento_seleciona(struct mundo_t *mundo ,struct evento_t *evento);
+
 #endif
