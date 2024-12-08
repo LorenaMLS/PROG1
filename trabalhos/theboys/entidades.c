@@ -33,7 +33,7 @@ struct heroi_t *cria_herois(struct mundo_t *mundo)
         vet_heroi[i].velocidade = gera_aleat(50, 5000);
         vet_heroi[i].habilidades = cjto_cria(gera_aleat(1, 3)); /*cria conjunto com cap de 1 até 3*/
         vet_heroi[i].status = 1;
-        
+
         /*insere as habilidades no conjunto*/
         while (vet_heroi[i].habilidades->num < vet_heroi[i].habilidades->cap)
         {
@@ -171,14 +171,14 @@ struct mundo_t *cria_mundo()
         return NULL;
 
     /*atribuição de variaveis da struct*/
-    mundo->relogio.inicio = T_INICIO;
-    mundo->relogio.fim = T_FIM_DO_MUNDO;
+    mundo->relogio = T_INICIO;
     mundo->tam.x = N_TAMANHO_MUNDO;
     mundo->tam.y = N_TAMANHO_MUNDO;
     mundo->num_habilidades = N_HABILIDADES;
-    mundo->num_herois = mundo->num_habilidades / 5;
+    mundo->num_herois = mundo->num_habilidades * 5;
     mundo->num_base = (mundo->num_herois / 5) + 1;
     mundo->num_missao = T_FIM_DO_MUNDO / 100;
+    mundo->n_miss_impos = 0;
 
     /*cria prio, base, missao e herois*/
     mundo->fprio_eventos = fprio_cria();
@@ -203,6 +203,16 @@ struct mundo_t *destroi_mundo(struct mundo_t *mundo)
     mundo = NULL;
 
     return mundo;
+}
+
+int retorna_relogio(struct mundo_t *mundo)
+{
+    return mundo->relogio;
+}
+
+struct fprio_t *retorna_evento(struct mundo_t *mundo)
+{
+    return mundo->fprio_eventos;
 }
 
 void heroi_imprime(struct mundo_t *mundo)

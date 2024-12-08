@@ -4,10 +4,12 @@
 #include "lista.h"
 #include "fprio.h"
 #include "conjunto.h"
+#include "entidades.h"
 
 /*Define Lista*/
 #define L_FIM -1
 #define L_INICIO 0
+
 /*Tipos de eventos que vao entrar na lef:
 NAO usar 0 ou -1 pois sao #defines da lista_t*/
 #define EV_CHEGA 1
@@ -72,7 +74,7 @@ int evento_morre(struct mundo_t *mundo, unsigned int tempo, unsigned int id_hero
 
 /*Missão é iniciada no instante T*/
 /*retorno: 1 se sucesso ou 0 se erro*/
-int evento_missao(struct mundo_t *mundo, unsigned int tempo);
+int evento_missao(struct mundo_t *mundo, unsigned int tempo, unsigned int id_missao);
 
 /*Encerra a simulação de mundo no instante T*/
 /*retorno: 1 se sucesso ou 0 se erro*/

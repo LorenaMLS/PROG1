@@ -9,6 +9,7 @@
 #define T_FIM_DO_MUNDO 525600
 #define N_TAMANHO_MUNDO 20000
 #define N_HABILIDADES 10
+#define TEMPO_INICIAL 200 /* 4320 = 60*24*3 = 3 dias*/
 
 /*descreve um heroi*/
 struct heroi_t
@@ -26,8 +27,8 @@ struct heroi_t
 /*cordenadas do mundo no plano cartesiano*/
 struct cordenadas_t
 {
-    unsigned int x;
-    unsigned int y;
+    int x;
+    int y;
 };
 
 /*descreve a base*/
@@ -47,16 +48,11 @@ struct missao_t
     unsigned int id;           /*indentificação da missao*/
     unsigned int perigo;       /*nivel de perigo da missao*/
     struct cordenadas_t local; /*local da missao*/
-
+    short realizada;           /*se foi concluida == 1, 0 caso contrario */
+    int tentativas;            /*número de tentativas de cumprir a missão*/
     struct cjto_t *habilidades; /*hablidades nescessarias*/
 };
 
-/*tempo do mundo*/
-struct tempo_t
-{
-    unsigned int inicio;
-    unsigned int fim;
-};
 
 /*descreve o mundo*/
 struct mundo_t
@@ -69,10 +65,11 @@ struct mundo_t
 
     int num_missao;          /*quantidade de missoes*/
     struct missao_t *missao; /*vetor de missoes*/
+    int n_miss_impos;        /*número de missões impossíveis*/
 
     int num_habilidades;     /*quantidade de habilidades possiveis*/
     struct cordenadas_t tam; /*tamanho do mundo*/
-    struct tempo_t relogio;  /*tempo do mundo*/
+    int relogio;  /*tempo do mundo*/
 
     struct fprio_t *fprio_eventos;  /*fila de prioridades*/
 };
@@ -113,6 +110,12 @@ struct mundo_t *cria_mundo();
 /*destroi a estrutuda de dados do mundo*/
 /*retorno NULL*/
 struct mundo_t *destroi_mundo(struct mundo_t *mundo);
+
+/*Retorna o relogio do mundo*/
+int retorna_relogio(struct mundo_t *mundo);
+
+/*Retorna fila de eventos do mundo*/
+struct fprio_t *retorna_evento(struct mundo_t *mundo);
 
 /*função que imprime os status do heroi*/
 void heroi_imprime(struct mundo_t *mundo);
