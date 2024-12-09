@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "fprio.h"
+#include "eventos.h"
 
 struct fprio_t *fprio_cria()
 {
@@ -191,6 +192,7 @@ void fprio_imprime(struct fprio_t *f)
     while (aux)
     {
         printf("(%d %d)", aux->tipo, aux->prio);
+        evento_printar(aux->item);
 
         /*condição para não dar espaço no final da fila*/
         if (aux->prox)

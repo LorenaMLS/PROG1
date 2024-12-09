@@ -99,4 +99,10 @@ int retorna_dado2 (struct evento_t *evento);
 /*função que retorna dado3 da struct evento*/
 int retorna_dado3 (struct evento_t *evento);
 
+/*função que imprime os status do evento*/
+void evento_printar(struct evento_t *evento);
+
+/*função que atualiza o tempo do mundo*/
+void atualiza_relogio(struct mundo_t *mundo, int tempo);
+
 #endif
