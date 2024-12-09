@@ -14,12 +14,12 @@
 /*descreve um heroi*/
 struct heroi_t
 {
-    unsigned int id; /*id do heroi*/
-    unsigned int paciencia;
-    unsigned int velocidade;
-    unsigned int experiencia;
+    int id; /*id do heroi*/
+    int paciencia;
+    int velocidade;
+    int experiencia;
     int status; /*status do heroi; vivo = 1, morto = - 1*/
-    int id_base; /* referencia onde esta localizado o heroi*/
+    int id_base; /*referencia onde esta localizado o heroi*/
 
     struct cjto_t *habilidades; /*habilidades do heroi*/
 };
@@ -34,19 +34,19 @@ struct cordenadas_t
 /*descreve a base*/
 struct base_t
 {
-    unsigned int id_base;      /*identificação da base*/
-    unsigned int lotacao;      /*quantidade de pessoas na base*/
+    int id_base;      /*identificação da base*/
+    int lotacao;      /*quantidade de pessoas na base*/
     struct cordenadas_t local; /*local da base*/
 
     struct cjto_t *presentes; /*identifica quantos herois há na base*/
-    struct fprio_t *espera;   /*fila de espera de herois*/
+    struct lista_t *espera;   /*lista de espera de herois*/
 };
 
 /*descreve a missao*/
 struct missao_t
 {
-    unsigned int id;           /*indentificação da missao*/
-    unsigned int perigo;       /*nivel de perigo da missao*/
+    int id;           /*indentificação da missao*/
+    int perigo;       /*nivel de perigo da missao*/
     struct cordenadas_t local; /*local da missao*/
     short realizada;           /*se foi concluida == 1, 0 caso contrario */
     int tentativas;            /*número de tentativas de cumprir a missão*/

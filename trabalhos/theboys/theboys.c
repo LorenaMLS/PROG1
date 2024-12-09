@@ -8,6 +8,7 @@
 #include "conjunto.h"
 #include "lista.h"
 #include "fprio.h"
+#include "eventos.h"
 
 // seus #defines vão aqui
 
@@ -17,6 +18,7 @@
 int main()
 {
   struct mundo_t *mundo;
+  struct evento_t *evento;
 
   // iniciar o mundo
   srand(0);
@@ -27,13 +29,59 @@ int main()
 
   printf("MUNDO CRIADO\n");
 
-  heroi_imprime(mundo);
-  base_imprime(mundo);
-  missao_imprime(mundo);
+  evento_inicia(mundo);
+  
+  while (retorna_relogio(mundo) < T_FIM_DO_MUNDO)
+  {
+    evento = fprio_retira(retorna_evento(mundo), 0, 0);
 
- 
+    switch (evento->tipo)
+    {
+    case EV_CHEGA:
+      evento_chega(mundo, retorna_relogio(mundo), retorna_dado1(evento), retorna_dado2(evento));
+      break;
 
-  // executar o laço de simulação
+    case EV_ESPERA:
+      evento_espera(mundo, retorna_relogio(mundo), retorna_dado1(evento), retorna_dado2(evento));
+      break;
+
+    case EV_DESISTE:
+      evento_desiste(mundo, retorna_relogio(mundo), retorna_dado1(evento), retorna_dado2(evento));
+      break;
+
+    case EV_AVISA:
+      evento_avisa(mundo, retorna_relogio(mundo), retorna_dado1(evento), retorna_dado2(evento));
+      break;
+
+    case EV_ENTRA:
+      evento_entra(mundo, retorna_relogio(mundo), retorna_dado1(evento), retorna_dado2(evento));
+      break;
+
+    case EV_SAI:
+      evento_sai(mundo, retorna_relogio(mundo), retorna_dado1(evento), retorna_dado2(evento));
+      break;
+
+    case EV_VIAJA:
+      evento_viaja(mundo, retorna_relogio(mundo), retorna_dado1(evento), retorna_dado2(evento));
+      break;
+
+    case EV_MORRE:
+      evento_morre(mundo, retorna_relogio(mundo), retorna_dado1(evento), retorna_dado2(evento), retorna_dado3(evento));
+      break;
+
+    case EV_MISSAO:
+      evento_missao(mundo, retorna_relogio(mundo), retorna_dado1(evento));
+      break;
+
+    case EV_FIM:
+      evento_fim(mundo, retorna_relogio(mundo));
+      break;
+
+    default:
+      break;
+    }
+    evento_fim(mundo, T_FIM_DO_MUNDO);
+  }
 
   // destruir o mundo
   mundo = destroi_mundo(mundo);

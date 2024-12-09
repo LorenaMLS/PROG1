@@ -79,11 +79,11 @@ struct base_t *cria_base(struct mundo_t *mundo)
     for (i = 0; i < mundo->num_base; i++)
     {
         base[i].id_base = i;
-        base[i].lotação = gera_aleat(3, 10);
+        base[i].lotacao = gera_aleat(3, 10);
         base[i].local.x = gera_aleat(0, N_TAMANHO_MUNDO - 1);
         base[i].local.y = gera_aleat(0, N_TAMANHO_MUNDO - 1);
         base[i].presentes = cjto_cria(mundo->num_herois); /*averiguar*/
-        base[i].espera = fprio_cria();
+        base[i].espera = lista_cria();
     }
 
     return base;
@@ -101,7 +101,7 @@ struct base_t *destroi_base(struct mundo_t *mundo)
     for (i = 0; i < mundo->num_base; i++)
     {
         cjto_destroi(mundo->base[i].presentes);
-        fprio_destroi(mundo->base[i].espera);
+        lista_destroi(mundo->base[i].espera);
     }
 
     /*destroi a base*/
@@ -261,16 +261,16 @@ void base_imprime(struct mundo_t *mundo)
         printf("base id: %d\n", mundo->base[i].id_base);
         printf("base local x: %d\n", mundo->base[i].local.x);
         printf("base local y: %d\n", mundo->base[i].local.y);
-        printf("base lotação: %d\n", mundo->base[i].lotação);
+        printf("base lotação: %d\n", mundo->base[i].lotacao);
 
         /*imprime conjunto de herois presentes*/
         printf("base presentes: ");
         cjto_imprime(mundo->base->presentes);
         printf("\n");
 
-        /*imprime fila de espera*/
+        /*imprime lista de espera*/
         printf("base espera: ");
-        fprio_imprime(mundo->base[i].espera);
+        lista_imprime(mundo->base[i].espera);
         printf("\n");
     }
     printf("\n");
