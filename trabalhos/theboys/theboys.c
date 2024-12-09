@@ -19,6 +19,7 @@ int main()
 {
   struct mundo_t *mundo;
   struct evento_t *evento = NULL;
+  int aux;
 
   // iniciar o mundo
   srand(0);
@@ -32,18 +33,12 @@ int main()
   evento_inicia(mundo);
   fprio_imprime(mundo->fprio_eventos);
 
-  printf("entrando no while \n\n\n");
-
   while (retorna_relogio(mundo) < T_FIM_DO_MUNDO)
   {
-    printf("evento: %p \n\n", evento);
-    evento = fprio_retira(retorna_evento(mundo), 0, 0);
-    printf("evento: %p \n\n", evento);
+    evento = fprio_retira(retorna_evento(mundo), &aux, &aux);
+    evento_printar(evento);
 
-    /* evento_printar(evento); */
-
-
-    /* switch (evento->tipo)
+    switch (evento->tipo)
     {
     case EV_CHEGA:
       evento_chega(mundo, retorna_relogio(mundo), retorna_dado1(evento), retorna_dado2(evento));
@@ -87,7 +82,7 @@ int main()
 
     default:
       break;
-    } */
+    }
     evento_destroi(evento);
   }
 

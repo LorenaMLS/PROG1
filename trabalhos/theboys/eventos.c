@@ -131,12 +131,12 @@ int evento_chega(struct mundo_t *mundo, int tempo, int id_heroi, int id_base)
     if (espera)
     {
         evento = evento_cria(EV_ESPERA, tempo, id_heroi, id_base, 0);
-        fprio_insere(mundo->fprio_eventos, evento, EV_ESPERA, tempo);
+        fprio_insere(mundo->fprio_eventos, evento, 0, tempo);
     }
     else
     {
         evento = evento_cria(EV_DESISTE, tempo, id_heroi, id_base, 0);
-        fprio_insere(mundo->fprio_eventos, evento, EV_DESISTE, tempo);
+        fprio_insere(mundo->fprio_eventos, evento, 0, tempo);
     }
 
     atualiza_relogio(mundo, tempo);
@@ -166,7 +166,7 @@ int evento_espera(struct mundo_t *mundo, int tempo, int id_heroi, int id_base)
         return 0;
 
     /*insere na fila de eventos*/
-    fprio_insere(mundo->fprio_eventos, evento, EV_AVISA, tempo);
+    fprio_insere(mundo->fprio_eventos, evento, 0, tempo);
     atualiza_relogio(mundo, tempo);
 
     return 1;
@@ -195,7 +195,7 @@ int evento_desiste(struct mundo_t *mundo, int tempo, int id_heroi, int id_base)
         return 0;
 
     /*insere na fila de eventos*/
-    fprio_insere(mundo->fprio_eventos, evento, EV_VIAJA, tempo);
+    fprio_insere(mundo->fprio_eventos, evento, 0, tempo);
     atualiza_relogio(mundo, tempo);
 
     return 1;
@@ -232,7 +232,7 @@ int evento_avisa(struct mundo_t *mundo, int tempo, int id_heroi, int id_base)
             return 0;
 
         /*insere na fila de eventos*/
-        fprio_insere(mundo->fprio_eventos, evento, EV_ENTRA, tempo);
+        fprio_insere(mundo->fprio_eventos, evento, 0, tempo);
     }
 
     atualiza_relogio(mundo, tempo);
@@ -263,7 +263,7 @@ int evento_entra(struct mundo_t *mundo, int tempo, int id_heroi, int id_base)
         return 0;
 
     /*insere na fila de eventos*/
-    fprio_insere(mundo->fprio_eventos, evento, EV_SAI, tempo);
+    fprio_insere(mundo->fprio_eventos, evento, 0, tempo);
     atualiza_relogio(mundo, tempo);
 
     return 1;
@@ -293,13 +293,13 @@ int evento_sai(struct mundo_t *mundo, int tempo, int id_heroi, int id_base)
 
     /*testa, cria e insere o evento VIAJA */
     if ((evento = evento_cria(EV_VIAJA, tempo, id_heroi, base_destino, 0)))
-        fprio_insere(mundo->fprio_eventos, evento, EV_VIAJA, tempo);
+        fprio_insere(mundo->fprio_eventos, evento, 0, tempo);
     else
         return 0;
 
     /*testa, cria e insere evento AVISA*/
     if ((evento = evento_cria(EV_AVISA, tempo, id_heroi, id_base, 0)))
-        fprio_insere(mundo->fprio_eventos, evento, EV_AVISA, tempo);
+        fprio_insere(mundo->fprio_eventos, evento, 0, tempo);
     else
         return 0;
 
@@ -338,7 +338,7 @@ int evento_viaja(struct mundo_t *mundo, int tempo, int id_heroi, int id_base)
         return 0;
 
     /*insere na fila de eventos*/
-    fprio_insere(mundo->fprio_eventos, evento, EV_CHEGA, tempo);
+    fprio_insere(mundo->fprio_eventos, evento, 0, tempo);
     atualiza_relogio(mundo, tempo);
 
     return 1;
@@ -370,7 +370,7 @@ int evento_morre(struct mundo_t *mundo, int tempo, int id_heroi, int id_base, in
         return 1;
 
     /*insere na fila de eventos*/
-    fprio_insere(mundo->fprio_eventos, evento, EV_AVISA, tempo);
+    fprio_insere(mundo->fprio_eventos, evento, 0, tempo);
     atualiza_relogio(mundo, tempo);
 
     return 1;
@@ -443,7 +443,7 @@ int evento_missao(struct mundo_t *mundo, int tempo, int id_missao)
                 {
                     /*cria e insere evento MORRE*/
                     evento = evento_cria(EV_MORRE, tempo, i, 0, id_missao);
-                    fprio_insere(mundo->fprio_eventos, evento, EV_MORRE, tempo);
+                    fprio_insere(mundo->fprio_eventos, evento, 0, tempo);
                 }
                 else
                     /*incrementa a experiência de heroi*/
@@ -455,7 +455,7 @@ int evento_missao(struct mundo_t *mundo, int tempo, int id_missao)
     {
         /*Missão adiada para 24 horas*/
         evento = evento_cria(EV_MISSAO, tempo + 24 * 60, 0, 0, id_missao);
-        fprio_insere(mundo->fprio_eventos, evento, EV_MISSAO, tempo);
+        fprio_insere(mundo->fprio_eventos, evento, 0, tempo);
         printf("%6d: MISSAO %d IMPOSSIVEL ", tempo, id_missao);
     }
 
@@ -527,7 +527,7 @@ int evento_inicia(struct mundo_t *mundo)
             return 0;
 
         /*insere na fila de eventos*/
-        fprio_insere(mundo->fprio_eventos, evento, EV_CHEGA, tempo);
+        fprio_insere(mundo->fprio_eventos, evento, 0, tempo);
     }
 
     /*cria evento MISSAO para cada missao*/
@@ -541,7 +541,7 @@ int evento_inicia(struct mundo_t *mundo)
             return 0;
 
         /*insere na fila de eventos*/
-        fprio_insere(mundo->fprio_eventos, evento, EV_MISSAO, tempo);
+        fprio_insere(mundo->fprio_eventos, evento, 0, tempo);
     }
 
     /*Testa e cria evento FIM DO MUNDO*/
@@ -549,7 +549,7 @@ int evento_inicia(struct mundo_t *mundo)
         return 0;
 
     /*insere na fila de eventos*/
-    fprio_insere(mundo->fprio_eventos, evento, EV_FIM, T_FIM_DO_MUNDO);
+    fprio_insere(mundo->fprio_eventos, evento, 0, T_FIM_DO_MUNDO);
 
     return 1;
 }

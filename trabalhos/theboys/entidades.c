@@ -207,11 +207,17 @@ struct mundo_t *destroi_mundo(struct mundo_t *mundo)
 
 int retorna_relogio(struct mundo_t *mundo)
 {
+    if (!mundo)
+        return 0;
+
     return mundo->relogio;
 }
 
 struct fprio_t *retorna_evento(struct mundo_t *mundo)
-{
+{   
+    if (!mundo)
+        return NULL;
+
     return mundo->fprio_eventos;
 }
 
