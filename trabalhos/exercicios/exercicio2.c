@@ -1,23 +1,33 @@
 #include <stdio.h>
+#define lin 3
+#define col 3
+
+int soma_matriz(int matriz, int tamanho)
+{
+    int *i, *j, soma;
+
+    for (i = 0; i < tamanho; i++)
+        for (j = 0; j < tamanho; j++)
+            soma += matriz[i][j];
+    
+    return soma;
+}
 
 int main()
 {
-    int n, aux;
-    
-    do
-    {
-        scanf ("%d", &n);
-        aux = n*n;
+    int matriz[lin][col];
 
-    } while (n != 0);
+    /*lê a matriz*/
+    for (int i = 0; i < lin; i++)
+        for (int j = 0; j < lin; j++)
+            scanf("%d", &matriz[i][j]);
 
-    if (n != aux)
-    {
-        printf("0\n");
-        return 0;
-    }
-    
-    printf ("1\n");
+    /*imprime a matriz*/
+    for (int i = 0; i < lin; i++)
+        for (int j = 0; j < lin; j++)
+            printf("m[%d] %d\n", matriz[i], i);
+
+    printf ("soma %d\n", soma_matriz(matriz[lin][col], lin));
 
     return 0;
 }
