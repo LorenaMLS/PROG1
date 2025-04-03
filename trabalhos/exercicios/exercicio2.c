@@ -1,33 +1,43 @@
 #include <stdio.h>
-#define lin 3
-#define col 3
 
-int soma_matriz(int matriz, int tamanho)
+void imprime_vet(int *vet, int tam)
 {
-    int *i, *j, soma;
+    if(!vet)
+        return;
 
-    for (i = 0; i < tamanho; i++)
-        for (j = 0; j < tamanho; j++)
-            soma += matriz[i][j];
-    
-    return soma;
+    int i = 0;
+    while (i < tam)
+    {
+        printf("%d ", vet[i]);
+        i++;
+    }
+    printf("\n");
 }
 
-int main()
+int main ()
 {
-    int matriz[lin][col];
+    int r[10], par[10], impar[10];
+    int i;
 
-    /*lê a matriz*/
-    for (int i = 0; i < lin; i++)
-        for (int j = 0; j < lin; j++)
-            scanf("%d", &matriz[i][j]);
+    i = 0;
+    while (i < 10)
+    {
+        par[i] = i * 2;
+        impar[i] = i * 2 + 1;
+        r[i] = 0;
+        i++;
+    }
 
-    /*imprime a matriz*/
-    for (int i = 0; i < lin; i++)
-        for (int j = 0; j < lin; j++)
-            printf("m[%d] %d\n", matriz[i], i);
+    i = 0;
+    while (i < 10)
+    {
+        r[i]= par[i] + impar[i];
+        i++;
+    }
 
-    printf ("soma %d\n", soma_matriz(matriz[lin][col], lin));
+    imprime_vet(par, 10);
+    imprime_vet(impar, 10);
+    imprime_vet(r, 10);
 
     return 0;
 }

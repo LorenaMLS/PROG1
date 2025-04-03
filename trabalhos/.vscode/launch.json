@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": false,
-      "cwd": "/home/bcc/lmls22/ci1055/prog1/tp3",
-      "program": "/home/bcc/lmls22/ci1055/prog1/tp3/build/Debug/outDebug",
+      "cwd": "/home/bcc/lmls22/Documentos/PROG1/trabalhos/tp1",
+      "program": "/home/bcc/lmls22/Documentos/PROG1/trabalhos/tp1/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

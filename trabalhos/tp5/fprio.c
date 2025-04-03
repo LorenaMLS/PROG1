@@ -1,8 +1,7 @@
 // TAD Fila de prioridades (FPRIO) genérica
-// Carlos Maziero, DINF/UFPR, Out 2024
 // Implementação com lista encadeada simples
 
-// A COMPLETAR
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "fprio.h"
@@ -191,11 +190,9 @@ void fprio_imprime(struct fprio_t *f)
         return;
 
     aux = f->prim;
-    while (aux != NULL)
+    while (aux)
     {
-        printf("(");
-        printf("%d %d", aux->tipo, aux->prio);
-        printf(")");
+        printf("(%d %d)", aux->tipo, aux->prio);
 
         /*condição para não dar espaço no final da fila*/
         if (aux->prox)

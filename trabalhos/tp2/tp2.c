@@ -122,7 +122,7 @@ struct racional soma_tudo(struct racional r[], long n)
 
   if (!valido_r(aux))
     return cria_r(0, 1);
-    
+
   return aux;
 }
 
@@ -141,14 +141,13 @@ int main()
     scanf("%ld", &n);
   } while (n < 0 || n > 100);
 
-
   /*leitura dos racionais e impressão*/
   printf("VETOR = ");
   for (i = 0; i < n; i++)
   {
     scanf("%ld %ld", &num, &den);
     r[i] = cria_r(num, den);
-    imprime_r(r[i]);  /*aproveitando o mesmo For para imprimir*/
+    imprime_r(r[i]); /*aproveitando o mesmo For para imprimir*/
     printf(" ");
   }
 
