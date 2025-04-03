@@ -1,3 +1,5 @@
+/*Trabalho por: Lorena Moreira L Dos Santos, GRR:20221244*/
+
 /*
  * Tipos Abstratos de Dados - TADs
  * Arquivo do programa principal, que usa o TAD racional.
@@ -53,7 +55,7 @@ int main()
             return 1;
         }
 
-        /*imprime respectivamente soma, subtrai, multiplica e divide*/
+        /*imprime e respectivamente soma, subtrai, multiplica e divide*/
         imprime_r(soma_r(r1, r2));
         imprime_r(subtrai_r(r1, r2));
         imprime_r(multiplica_r(r1, r2));
