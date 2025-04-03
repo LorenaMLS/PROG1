@@ -198,7 +198,8 @@ struct racional divide_r(struct racional r1, struct racional r2)
   if (!valido_r(r2))
     return r2;
 
-  /*inverte o denominador pelo numerador*/
+  /*inverte o denominador pelo numerador,
+  chama a função multiplica_r que já simplifica*/
   aux.num = r2.den;
   aux.den = r2.num;
   aux = multiplica_r(aux, r1);
