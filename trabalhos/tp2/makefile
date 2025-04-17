@@ -2,30 +2,18 @@
 
 CFLAGS = -Wall -Wextra -g -std=c99 # flags de compilacao
 CC = gcc
-TP = tp2
 
 # gera o executável
-all: $(TP).o racional.o
-	$(CC) -o $(TP) $(TP).o racional.o
+all: tp2.o racional.o
+	$(CC) -o tp2 tp2.o racional.o
 
 # compila racional.c
 racional.o: racional.c racional.h
 	$(CC) -c $(CFLAGS) racional.c
 
 # compila tp2.c
-$(TP).o: $(TP).c racional.h
-	$(CC) -c $(CFLAGS) $(TP).c
-
-# git resumido
-git:
-	make clean; git add .; git commit -m "$(c)"; git push
-
-# apaga, recompila e executa
-ll:
-	make clean; clear; make; ./$(TP)
+tp2.o: tp2.c racional.h
+	$(CC) -c $(CFLAGS) tp2.c
 
 clean:
-	rm -f *.o *~ $(TP)
-
-# Define uma variável de comentário padrão
-c ?= "[git]subiu pelo make"
+	rm -f *.o *~ tp2

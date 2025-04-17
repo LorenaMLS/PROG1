@@ -1,3 +1,5 @@
+/*Trabalho por: Lorena Moreira Leite Dos Santos, GRR:20221244*/
+
 /*
  * Tipos Abstratos de Dados - TADs
  * Arquivo de implementação para TAD racional.
