@@ -27,8 +27,7 @@ long aleat(long min, long max)
   long aleatorio;
   aleatorio = 0;
 
-  aleatorio = rand();
-  return (aleatorio % (max - min + 1) + min);
+  return (aleatorio + rand () % (max - min + 1) + min);
 }
 
 /* Máximo Divisor Comum entre a e b      */
