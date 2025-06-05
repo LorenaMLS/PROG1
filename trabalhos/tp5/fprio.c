@@ -1,10 +1,26 @@
 // TAD Fila de prioridades (FPRIO) genérica
+// Lorena Moreira Leite Dos Santos, GRR:20221244
 // Implementação com lista encadeada simples
 
-
+// A COMPLETAR
 #include <stdio.h>
 #include <stdlib.h>
 #include "fprio.h"
+
+struct fpnodo_t
+{
+    void *item;
+    int tipo;
+    int prio;
+    struct fpnodo_t *prox;
+};
+
+struct fprio_t
+{
+    struct fpnodo_t *prim;
+    struct fpnodo_t *fim;
+    int num;
+};
 
 struct fprio_t *fprio_cria()
 {
@@ -14,6 +30,7 @@ struct fprio_t *fprio_cria()
         return NULL;
 
     fila->prim = NULL;
+    fila->fim = NULL;
     fila->num = 0;
 
     return fila;
@@ -47,32 +64,22 @@ struct fpnodo_t *fpnodo_destroi(struct fpnodo_t *nodo)
 
 struct fprio_t *fprio_destroi(struct fprio_t *f)
 {
-    struct fpnodo_t *aux_ant, *aux_prox;
+    struct fpnodo_t *atual, *proximo;
 
     if (!f)
         return NULL;
 
-    /*destroi se tiver um elemento*/
-    if (f->num == 1)
-        fpnodo_destroi(f->prim);
-    /*destroi se a lista for maior que 1*/
-    else if (f->num > 1)
+    // Destrói todos os nós
+    atual = f->prim;
+    while (atual != NULL)
     {
-        aux_ant = f->prim;
-        aux_prox = f->prim->prox;
-
-        while (aux_prox != NULL)
-        {
-            fpnodo_destroi(aux_ant);
-            aux_ant = aux_prox;
-            aux_prox = aux_prox->prox;
-        }
-        fpnodo_destroi(aux_ant);
+        proximo = atual->prox;
+        fpnodo_destroi(atual);
+        atual = proximo;
     }
 
+    // Destrói a estrutura da fila
     free(f);
-    f = NULL;
-
     return NULL;
 }
 
@@ -101,10 +108,14 @@ int fprio_insere(struct fprio_t *f, void *item, int tipo, int prio)
 
     /*se a fila estiver vazia*/
     if (!f->num)
+    {
         f->prim = novo_nodo;
+        f->fim = novo_nodo;
+        return f->num++;
+    }
 
     /*se tiver a prioridade igual insere conforme FIFO*/
-    else if (novo_nodo->prio == f->prim->prio)
+    if (novo_nodo->prio == f->prim->prio)
     {
         if (fpnodo_compara(novo_nodo, f->prim))
         {
@@ -113,10 +124,11 @@ int fprio_insere(struct fprio_t *f, void *item, int tipo, int prio)
         }
         novo_nodo->prox = f->prim->prox;
         f->prim->prox = novo_nodo;
+        return f->num++;
     }
 
     /*insere elemento com prioridade maior no inicio da fila*/
-    else if (novo_nodo->prio < f->prim->prio)
+    if (novo_nodo->prio < f->prim->prio)
     {
         novo_nodo->prox = f->prim;
         f->prim = novo_nodo;
@@ -141,9 +153,7 @@ int fprio_insere(struct fprio_t *f, void *item, int tipo, int prio)
         aux_ant->prox = novo_nodo;
     }
 
-    f->num++;
-
-    return fprio_tamanho(f);
+    return f->num++;
 }
 
 void *fprio_retira(struct fprio_t *f, int *tipo, int *prio)
@@ -157,7 +167,7 @@ void *fprio_retira(struct fprio_t *f, int *tipo, int *prio)
     if (!f->num)
         return NULL;
 
-    /*retira da lista*/
+    /*retira da fila*/
     aux = f->prim;
     f->prim = f->prim->prox;
     f->num--;
@@ -186,18 +196,16 @@ void fprio_imprime(struct fprio_t *f)
 {
     struct fpnodo_t *aux;
 
-    if (!f)
+    if (!f || !f->prim)
         return;
 
+    /*imprime até o penultimo elemento*/
     aux = f->prim;
-    while (aux)
+    while (aux->prox != NULL)
     {
-        printf("(%d %d)", aux->tipo, aux->prio);
-
-        /*condição para não dar espaço no final da fila*/
-        if (aux->prox)
-            printf(" ");
-
+        printf("(%d %d) ", aux->tipo, aux->prio);
         aux = aux->prox;
     }
+    /*imprime o ultimo sem espaço*/
+    printf("(%d %d)", aux->tipo, aux->prio);
 }

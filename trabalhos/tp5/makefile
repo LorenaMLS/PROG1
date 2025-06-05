@@ -16,8 +16,5 @@ teste: $(BIN)
 valgrind: $(BIN)
 	valgrind --leak-check=full --track-origins=yes ./$(BIN)
 
-ll:
-	make clean; clear; make
-
 clean:
 	rm -f *.o *~ $(BIN)
