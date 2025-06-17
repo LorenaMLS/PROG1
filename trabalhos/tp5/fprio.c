@@ -18,7 +18,6 @@ struct fpnodo_t
 struct fprio_t
 {
     struct fpnodo_t *prim;
-    struct fpnodo_t *fim;
     int num;
 };
 
@@ -30,7 +29,6 @@ struct fprio_t *fprio_cria()
         return NULL;
 
     fila->prim = NULL;
-    fila->fim = NULL;
     fila->num = 0;
 
     return fila;
@@ -110,7 +108,6 @@ int fprio_insere(struct fprio_t *f, void *item, int tipo, int prio)
     if (!f->num)
     {
         f->prim = novo_nodo;
-        f->fim = novo_nodo;
         return f->num++;
     }
 
