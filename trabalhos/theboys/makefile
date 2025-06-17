@@ -8,11 +8,11 @@ MAIN    = theboys
 ENTREGA = $(MAIN)
 
 # lista de arquivos de cabeçalho (a completar)
-HDR = lista.h fprio.h entidades.h conjunto.h eventos.h
+HDR = fila.h fprio.h conjunto.h
 
 # lista de arquivos-objeto (a completar)
 # não inclua conjunto.o, senão ele será removido com "make clean"
-OBJ = lista.o fprio.o entidades.o theboys.o eventos.o
+OBJ = fila.o fprio.o theboys.o
 
 # construir o executável
 $(MAIN): $(MAIN).o $(OBJ) conjunto.o
@@ -21,10 +21,8 @@ $(MAIN): $(MAIN).o $(OBJ) conjunto.o
 $(MAIN).o: $(MAIN).c $(HDR)
 
 # construir os TADs
-lista.o: lista.c lista.h
+fila.o: fila.c fila.h
 fprio.o: fprio.c fprio.h
-entidades.o: entidades.c entidades.h
-eventos.o: eventos.c eventos.h
 
 # executar
 run: $(MAIN)
@@ -38,13 +36,10 @@ valgrind: $(MAIN)
 tgz: clean
 	-mkdir -p /tmp/$(USER)/$(ENTREGA)
 	chmod 0700 /tmp/$(USER)/$(ENTREGA)
-	cp *.c *.h makefile /tmp/$(USER)/$(ENTREGA)
+	cp *.c *.h conjunto.o makefile /tmp/$(USER)/$(ENTREGA)
 	tar czvf $(ENTREGA).tgz -C /tmp/$(USER) $(ENTREGA)
 	rm -rf /tmp/$(USER)
 	@echo "Arquivo $(ENTREGA).tgz criado para entrega"
-
-ll:
-	make clean; clear; make
 
 # limpar arquivos temporários
 clean:

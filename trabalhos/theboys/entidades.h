@@ -1,7 +1,7 @@
 #ifndef ENTIDADE_H
 #define ENTIDADE_H
 
-#include "lista.h"
+#include "fila.h"
 #include "fprio.h"
 #include "conjunto.h"
 

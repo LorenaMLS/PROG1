@@ -1,7 +1,7 @@
 #ifndef EVENTOS_H
 #define EVENTOS_H
 
-#include "lista.h"
+#include "fila.h"
 #include "fprio.h"
 #include "conjunto.h"
 #include "entidades.h"

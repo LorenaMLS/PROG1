@@ -1,4 +1,4 @@
-// programa principal do projeto "The Boys - 2024/2"
+// programa principal do projeto "The Boys - 2025/1"
 // Autor: Lorena Moreira, GRR 20221244
 
 // seus #includes vão aqui
@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include "entidades.h"
 #include "conjunto.h"
-#include "lista.h"
+#include "fila.h"
 #include "fprio.h"
 #include "eventos.h"
 
