@@ -18,6 +18,7 @@ struct fpnodo_t
 struct fprio_t
 {
     struct fpnodo_t *prim;
+    struct fpnodo_t *fim;
     int num;
 };
 
@@ -29,6 +30,7 @@ struct fprio_t *fprio_cria()
         return NULL;
 
     fila->prim = NULL;
+    fila->fim = NULL;
     fila->num = 0;
 
     return fila;
@@ -62,35 +64,25 @@ struct fpnodo_t *fpnodo_destroi(struct fpnodo_t *nodo)
 
 struct fprio_t *fprio_destroi(struct fprio_t *f)
 {
-    struct fpnodo_t *atual, *proximo;
+    struct fpnodo_t *aux;
 
     if (!f)
         return NULL;
 
-    // Destrói todos os nós
-    atual = f->prim;
-    while (atual != NULL)
+    while (f->prim != NULL)
     {
-        proximo = atual->prox;
-        fpnodo_destroi(atual);
-        atual = proximo;
+        aux = f->prim;
+        f->prim = aux->prox;
+
+        /* libera o item antes de destruir o nodo */
+        if (aux->item)
+            free(aux->item);
+
+        fpnodo_destroi(aux);
     }
 
-    // Destrói a estrutura da fila
     free(f);
     return NULL;
-}
-
-int fpnodo_compara(struct fpnodo_t *nodo1, struct fpnodo_t *nodo2)
-{
-    if (!nodo1 || !nodo2)
-        return 0;
-
-    /*compara se os dois nodos são exatamente iguais*/
-    if (nodo1->item == nodo2->item && nodo1->tipo == nodo2->tipo && nodo1->prio == nodo2->prio)
-        return 1;
-
-    return 0;
 }
 
 int fprio_insere(struct fprio_t *f, void *item, int tipo, int prio)
@@ -104,53 +96,48 @@ int fprio_insere(struct fprio_t *f, void *item, int tipo, int prio)
     if (!novo_nodo)
         return -1;
 
-    /*se a fila estiver vazia*/
-    if (!f->num)
+    /*insere na fila vazia*/
+    if (!f->prim)
     {
         f->prim = novo_nodo;
-        return f->num++;
+        f->fim = novo_nodo;
+        f->num++;
+        return f->num;
     }
 
-    /*se tiver a prioridade igual insere conforme FIFO*/
-    if (novo_nodo->prio == f->prim->prio)
+    aux_ant = NULL;
+    aux_prox = f->prim;
+
+    while (aux_prox && prio >= aux_prox->prio)
     {
-        if (fpnodo_compara(novo_nodo, f->prim))
+        /*evita duplicatas*/
+        if (item == aux_prox->item && tipo == aux_prox->tipo && prio == aux_prox->prio)
         {
             fpnodo_destroi(novo_nodo);
             return -1;
         }
-        novo_nodo->prox = f->prim->prox;
-        f->prim->prox = novo_nodo;
-        return f->num++;
+
+        aux_ant = aux_prox;
+        aux_prox = aux_prox->prox;
     }
 
-    /*insere elemento com prioridade maior no inicio da fila*/
-    if (novo_nodo->prio < f->prim->prio)
+    if (!aux_ant)
     {
+        /*insere no início*/
         novo_nodo->prox = f->prim;
         f->prim = novo_nodo;
     }
-    /*insere com prioridade menor e compara se tem elementos iguais*/
     else
     {
-        aux_ant = f->prim;
-        aux_prox = f->prim->prox;
-        while (aux_prox != NULL && novo_nodo->prio >= aux_prox->prio)
-        {
-            if (fpnodo_compara(novo_nodo, aux_ant))
-            {
-                fpnodo_destroi(novo_nodo);
-                return -1;
-            }
-
-            aux_ant = aux_prox;
-            aux_prox = aux_prox->prox;
-        }
         novo_nodo->prox = aux_prox;
         aux_ant->prox = novo_nodo;
     }
 
-    return f->num++;
+    if (!novo_nodo->prox)
+        f->fim = novo_nodo;
+
+    f->num++;
+    return f->num;
 }
 
 void *fprio_retira(struct fprio_t *f, int *tipo, int *prio)
@@ -167,7 +154,9 @@ void *fprio_retira(struct fprio_t *f, int *tipo, int *prio)
     /*retira da fila*/
     aux = f->prim;
     f->prim = f->prim->prox;
-    f->num--;
+
+    if (!f->prim)
+        f->fim = NULL;
 
     /*devolve os parametros*/
     *tipo = aux->tipo;
@@ -177,6 +166,7 @@ void *fprio_retira(struct fprio_t *f, int *tipo, int *prio)
     pra fora da função*/
     salva_item = aux->item;
     fpnodo_destroi(aux);
+    f->num--;
 
     return salva_item;
 }
@@ -198,7 +188,7 @@ void fprio_imprime(struct fprio_t *f)
 
     /*imprime até o penultimo elemento*/
     aux = f->prim;
-    while (aux->prox != NULL)
+    while (aux && aux->prox)
     {
         printf("(%d %d) ", aux->tipo, aux->prio);
         aux = aux->prox;
