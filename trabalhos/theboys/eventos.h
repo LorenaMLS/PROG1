@@ -25,11 +25,11 @@ NAO usar 0 ou -1 pois sao #defines da lista_t*/
 
 struct evento_t
 {
-    int tempo; /* tempo logico do evento */
-    int tipo;  /* inteiro para diferenciar os diferentes tipos de evento */
-    int dado1; /* um inteiro para guardar dados do evento */
-    int dado2; /* um inteiro para guardar dados do evento */
-    int dado3; /* um inteiro para guardar dados do evento */
+    int tempo; /*tempo logico do evento*/
+    int tipo;  /*inteiro para diferenciar os diferentes tipos de evento*/
+    int dado1; /*um inteiro para guardar dados do evento*/
+    int dado2; /*um inteiro para guardar dados do evento*/
+    int dado3; /*um inteiro para guardar dados do evento*/
 };
 
 /*cria evento e retorna ponteiro ou NULL se erro*/

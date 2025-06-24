@@ -34,6 +34,12 @@ struct heroi_t *cria_herois(struct mundo_t *mundo)
         vet_heroi[i].habilidades = cjto_cria(gera_aleat(1, 3)); /*cria conjunto com cap de 1 até 3*/
         vet_heroi[i].status = 1;
 
+        if (!vet_heroi[i].habilidades || !vet_heroi[i].habilidades->flag)
+        {
+            printf("ERRO: herói %d com conjunto de habilidades inválido\n", i);
+            exit(1);
+        }
+
         /*insere as habilidades no conjunto*/
         while (vet_heroi[i].habilidades->num < vet_heroi[i].habilidades->cap)
         {
@@ -82,8 +88,10 @@ struct base_t *cria_base(struct mundo_t *mundo)
         base[i].lotacao = gera_aleat(3, 10);
         base[i].local.x = gera_aleat(0, N_TAMANHO_MUNDO - 1);
         base[i].local.y = gera_aleat(0, N_TAMANHO_MUNDO - 1);
-        base[i].presentes = cjto_cria(mundo->num_herois); /*averiguar*/
-        base[i].espera = lista_cria();
+        base[i].presentes = cjto_cria(mundo->num_herois);
+        base[i].espera = fila_cria();
+        base[i].fila_max = 0;
+        base[i].missoes = 0;
     }
 
     return base;
@@ -101,7 +109,7 @@ struct base_t *destroi_base(struct mundo_t *mundo)
     for (i = 0; i < mundo->num_base; i++)
     {
         cjto_destroi(mundo->base[i].presentes);
-        lista_destroi(mundo->base[i].espera);
+        fila_destroi(mundo->base[i].espera);
     }
 
     /*destroi a base*/
@@ -119,15 +127,16 @@ struct missao_t *cria_missao(struct mundo_t *mundo)
     if (!mundo)
         return NULL;
 
-    /*aloca umvetor de missões com a qnt de missoes no mundo*/
-    if (!(missao = malloc(sizeof(struct missao_t) * mundo->num_missao)))
+    /*aloca um vetor de missões com a qnt de missoes no mundo*/
+    if (!(missao = malloc(sizeof(struct missao_t) * mundo->num_missoes)))
         return NULL;
 
     /*atribuição de variaveis da struct*/
-    for (i = 0; i < mundo->num_missao; i++)
+    for (i = 0; i < mundo->num_missoes; i++)
     {
         missao[i].id = i;
-        missao[i].perigo = gera_aleat(0, 100);
+        missao[i].realizada = 0;
+        missao[i].tentativas = 0;
         missao[i].local.x = gera_aleat(0, N_TAMANHO_MUNDO - 1);
         missao[i].local.y = gera_aleat(0, N_TAMANHO_MUNDO - 1);
 
@@ -153,7 +162,7 @@ struct missao_t *destroi_missao(struct mundo_t *mundo)
         return NULL;
 
     /*destroi o cojunto de habilidades nescessarias para a missão*/
-    for (i = 0; i < mundo->num_missao; i++)
+    for (i = 0; i < mundo->num_missoes; i++)
         cjto_destroi(mundo->missao[i].habilidades);
 
     /*destroi a missao*/
@@ -175,16 +184,28 @@ struct mundo_t *cria_mundo()
     mundo->tam.x = N_TAMANHO_MUNDO;
     mundo->tam.y = N_TAMANHO_MUNDO;
     mundo->num_habilidades = N_HABILIDADES;
-    mundo->num_herois = mundo->num_habilidades * 5;
+    mundo->num_herois = N_HABILIDADES * 5;
     mundo->num_base = (mundo->num_herois / 5) + 1;
-    mundo->num_missao = T_FIM_DO_MUNDO / 100;
-    mundo->n_miss_impos = 0;
+    mundo->num_missoes = T_FIM_DO_MUNDO / 100;
+    mundo->n_composto_v = N_HABILIDADES * 3;
 
     /*cria prio, base, missao e herois*/
     mundo->fprio_eventos = fprio_cria();
     mundo->base = cria_base(mundo);
     mundo->missao = cria_missao(mundo);
     mundo->heroi = cria_herois(mundo);
+
+    /*Inicialização de estatísticas*/
+    mundo->total_eventos_processados = 0;
+    mundo->total_missoes_cumpridas = 0;
+    mundo->total_mortes = 0;
+
+    mundo->tentativas_por_missao = calloc(mundo->num_missoes, sizeof(int));
+    if (!mundo->tentativas_por_missao)
+    {
+        printf("ERRO: falha ao alocar tentativas_por_missao\n");
+        exit(1);
+    }
 
     return mundo;
 }
@@ -194,15 +215,22 @@ struct mundo_t *destroi_mundo(struct mundo_t *mundo)
     if (!mundo)
         return NULL;
 
-    fprio_destroi(mundo->fprio_eventos);
+    /*Apenas destrói se ainda não foi destruído*/
+    if (mundo->fprio_eventos)
+    {
+        fprio_destroi(mundo->fprio_eventos);
+        mundo->fprio_eventos = NULL;
+    }
+
     destroi_base(mundo);
     destroi_missao(mundo);
     destroi_herois(mundo);
 
-    free(mundo);
-    mundo = NULL;
+    if (mundo->tentativas_por_missao)
+        free(mundo->tentativas_por_missao);
 
-    return mundo;
+    free(mundo);
+    return NULL;
 }
 
 int retorna_relogio(struct mundo_t *mundo)
@@ -214,7 +242,7 @@ int retorna_relogio(struct mundo_t *mundo)
 }
 
 struct fprio_t *retorna_evento(struct mundo_t *mundo)
-{   
+{
     if (!mundo)
         return NULL;
 
@@ -271,12 +299,12 @@ void base_imprime(struct mundo_t *mundo)
 
         /*imprime conjunto de herois presentes*/
         printf("base presentes: ");
-        cjto_imprime(mundo->base->presentes);
+        cjto_imprime(mundo->base[i].presentes);
         printf("\n");
 
         /*imprime lista de espera*/
         printf("base espera: ");
-        lista_imprime(mundo->base[i].espera);
+        fila_imprime(mundo->base[i].espera);
         printf("\n");
     }
     printf("\n");
@@ -292,11 +320,10 @@ void missao_imprime(struct mundo_t *mundo)
         return;
 
     /*status das missões criadas*/
-    printf("missao num: %d\n", mundo->num_missao);
-    for (i = 0; i < mundo->num_missao; i++)
+    printf("missao num: %d\n", mundo->num_missoes);
+    for (i = 0; i < mundo->num_missoes; i++)
     {
         printf("missao id: %d\n", mundo->missao[i].id);
-        printf("missao perigo: %d\n", mundo->missao[i].perigo);
         printf("missao local x: %d\n", mundo->missao[i].local.x);
         printf("missao local y: %d\n", mundo->missao[i].local.y);
 

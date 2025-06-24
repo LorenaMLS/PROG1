@@ -1,4 +1,6 @@
-// TAD Fila
+// TAD Fila genérica
+// Lorena Moreira Leite Dos Santos, GRR:20221244
+// Implementação com lista encadeada simples
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -48,25 +50,14 @@ struct fila_t *fila_destroi(struct fila_t *f)
     if (!f)
         return NULL;
 
-    /*destroi com um elemento*/
-    if (f->num == 1)
-    {
-        nodo_destroi(f->prim);
-        free(f);
-        f = NULL;
-        return NULL;
-    }
-
-    while (f->prim != f->fim)
+    while (f->prim != NULL)
     {
         aux = f->prim;
         f->prim = aux->prox;
         nodo_destroi(aux);
     }
-    fila_destroi(f->fim);
 
     free(f);
-    f = NULL;
     return NULL;
 }
 
@@ -81,7 +72,7 @@ int fila_insere(struct fila_t *f, void *item)
 
     /*verifica se o item já está na fila*/
     aux = f->prim;
-    while (aux != NULL) 
+    while (aux != NULL)
     {
         if (aux->item == item)
             return -1;
@@ -106,18 +97,49 @@ int fila_insere(struct fila_t *f, void *item)
     return fila_tamanho(f);
 }
 
-void *fila_retira (struct fila_t *f)
+void *fila_retira(struct fila_t *f)
 {
-    if (!f)
-        return -1;
+    struct fila_nodo_t *aux;
+    void *item;
 
-    
+    if (!f || !f->num || f->prim == NULL)
+        return NULL;
+
+    /*salva o ponteiro*/
+    aux = f->prim;
+    item = aux->item;        
+
+    /*retira da fila*/
+    f->prim = aux->prox;
+    nodo_destroi(aux);
+    f->num--;
+
+    return item;
 }
 
-int fila_tamanho (struct fila_t *f)
+
+int fila_tamanho(struct fila_t *f)
 {
     if (!f)
         return -1;
 
     return f->num;
 }
+
+void fila_imprime(struct fila_t *f)
+{
+    struct fila_nodo_t *atual;
+    int *valor;
+
+    if (!f || f->num == 0)
+        return;
+
+    atual = f->prim;
+    while (atual)
+    {
+        valor = (int *)atual->item;
+        printf(" %d", *valor);
+        atual = atual->prox;
+    }
+}
+

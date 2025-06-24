@@ -55,19 +55,38 @@ int heroi_testa(struct mundo_t *mundo, int id_heroi)
 
 struct cjto_t *uniao_habil(struct mundo_t *mundo, int id_base)
 {
-    struct cjto_t *uniao;
+    struct cjto_t *uniao = NULL;
+    struct cjto_t *tmp = NULL;
     int i;
 
-    /*Cria um conjunto vazio com a capacidade máxima de habilidades*/
+    if (!mundo || id_base < 0 || id_base >= mundo->num_base)
+        return NULL;
+
     uniao = cjto_cria(N_HABILIDADES);
     if (!uniao)
-        return 0;
+        return NULL;
 
     for (i = 0; i < mundo->num_herois; i++)
     {
-        /*verifica se heroi esta na base e insere as habil do heroi no conjunto uniao */
-        if (cjto_pertence(mundo->base[id_base].presentes, i))
-            cjto_uniao(uniao, mundo->heroi[i].habilidades);
+        if (cjto_pertence(mundo->base[id_base].presentes, i) == 1)
+        {
+            if (!mundo->heroi[i].habilidades || !mundo->heroi[i].habilidades->flag)
+            {
+                printf("ERRO: herói %d com habilidades inválidas\n", i);
+                cjto_destroi(uniao);
+                return NULL;
+            }
+
+            tmp = cjto_uniao(uniao, mundo->heroi[i].habilidades);
+            if (!tmp)
+            {
+                cjto_destroi(uniao);
+                return NULL;
+            }
+
+            cjto_destroi(uniao);
+            uniao = tmp;
+        }
     }
 
     return uniao;
@@ -116,16 +135,17 @@ int evento_chega(struct mundo_t *mundo, int tempo, int id_heroi, int id_base)
     mundo->heroi[id_heroi].id_base = id_base;
 
     /*se há vagas em B e a fila de espera em B está vazia*/
-    if (cjto_card(mundo->base[id_base].presentes) < mundo->base[id_base].lotacao && !lista_tamanho(mundo->base[id_base].espera))
+    if (cjto_card(mundo->base[id_base].presentes) < mundo->base[id_base].lotacao && !fila_tamanho(mundo->base[id_base].espera))
         espera = 1;
-    else if (mundo->heroi[id_heroi].paciencia > (10 * (lista_tamanho(mundo->base[id_base].espera))))
+    else if (mundo->heroi[id_heroi].paciencia > (10 * (fila_tamanho(mundo->base[id_base].espera))))
         espera = 1;
     else
         espera = 0;
 
     /*Imprime o evento*/
-    printf("%6d: CHEGA  HEROI %2d ", tempo, id_heroi);
-    printf("BASE %d (%2d/%2d) ", id_base, cjto_card(mundo->base[id_base].presentes), mundo->base[id_base].lotacao);
+    printf("%6d: CHEGA HEROI %2d BASE %d (%2d/%2d) %s\n", tempo, id_heroi, id_base,
+           cjto_card(mundo->base[id_base].presentes),
+           mundo->base[id_base].lotacao, espera ? "ESPERA" : "DESISTE");
 
     /*se o heroi espera então cria evento ESPERA, se não cria evento DESISTE*/
     if (espera)
@@ -147,28 +167,44 @@ int evento_chega(struct mundo_t *mundo, int tempo, int id_heroi, int id_base)
 int evento_espera(struct mundo_t *mundo, int tempo, int id_heroi, int id_base)
 {
     struct evento_t *evento;
+    int *id_copia;
 
     if (!mundo)
         return 0;
 
-    /*testa se heroi está vivo ou morto*/
+    /*Testa se herói está vivo*/
     if (!heroi_testa(mundo, id_heroi))
         return 0;
 
-    /*imprime o heroi na lista*/
-    printf("%6d: ESPERA HEROI %2d BASE %d (%2d)\n", tempo, id_heroi, id_base, cjto_card(mundo->base[id_base].presentes));
+    /*Imprime o herói na fila*/
+    printf("%6d: ESPERA HEROI %2d BASE %d (%2d)\n",
+           tempo, id_heroi, id_base,
+           cjto_card(mundo->base[id_base].presentes));
 
-    /*Insere heroi na lista de espera da base*/
-    lista_insere(mundo->base[id_base].espera, id_heroi, L_FIM);
+    /*Aloca cópia do ID para inserir na fila genérica*/
+    id_copia = malloc(sizeof(int));
+    if (!id_copia)
+        return 0;
+    *id_copia = id_heroi;
 
-    /*testa e cria evento AVISA*/
-    if (!(evento = evento_cria(EV_AVISA, tempo, id_heroi, id_base, 0)))
+    /* Insere herói na fila de espera da base */
+    if (fila_insere(mundo->base[id_base].espera, id_copia) == -1)
+    {
+        free(id_copia); /*Libera memória se falhar a inserção*/
+        return 0;
+    }
+
+    /*Atualiza tamanho máximo da fila se necessáriO*/
+    int tamanho_fila = fila_tamanho(mundo->base[id_base].espera);
+    if (tamanho_fila > mundo->base[id_base].fila_max)
+        mundo->base[id_base].fila_max = tamanho_fila;
+
+    /*Cria e agenda evento AVISA*/
+    evento = evento_cria(EV_AVISA, tempo, id_heroi, id_base, 0);
+    if (!evento || !fprio_insere(mundo->fprio_eventos, evento, 0, tempo))
         return 0;
 
-    /*insere na fila de eventos*/
-    fprio_insere(mundo->fprio_eventos, evento, 0, tempo);
     atualiza_relogio(mundo, tempo);
-
     return 1;
 }
 
@@ -185,7 +221,7 @@ int evento_desiste(struct mundo_t *mundo, int tempo, int id_heroi, int id_base)
         return 0;
 
     /*imprime que o heroi desistiu de esperar*/
-    printf("%6d: DESIST HEROI %2d BASE %d \n", tempo, id_heroi, id_base);
+    printf("%6d: DESIST HEROI %2d BASE %d\n", tempo, id_heroi, id_base);
 
     /*gera uma base aleatoria para o heroi seguir*/
     base_destino = gera_aleat(0, mundo->num_base - 1);
@@ -204,34 +240,50 @@ int evento_desiste(struct mundo_t *mundo, int tempo, int id_heroi, int id_base)
 int evento_avisa(struct mundo_t *mundo, int tempo, int id_heroi, int id_base)
 {
     struct evento_t *evento;
+    struct fila_t *espera;
+    struct cjto_t *presentes;
+    int lotacao;
+    int *id_ptr;
 
     if (!mundo)
         return 0;
 
-    /*testa se heroi está vivo ou morto*/
+    /*Acessa a fila de espera, conjunto de presentes e lotação da base informada*/
+    espera = mundo->base[id_base].espera;
+    presentes = mundo->base[id_base].presentes;
+    lotacao = mundo->base[id_base].lotacao;
+
+    /*Testa se o herói está vivo; se estiver morto, a função retorna sem efeito*/
     if (!heroi_testa(mundo, id_heroi))
         return 0;
 
-    printf("%6d: AVISA  PORTEIRO BASE %d (%2d/%2d)", tempo, id_base, cjto_card(mundo->base[id_base].presentes), mundo->base[id_base].lotacao);
-    lista_imprime(mundo->base[id_base].espera);
+    /*Imprime o estado atual da base: número de heróis presentes e a fila de espera*/
+    printf("%6d: AVISA PORTEIRO BASE %d (%2d/%2d) FILA [",
+           tempo, id_base,
+           cjto_card(presentes),
+           lotacao);
+    fila_imprime(espera);
+    printf(" ]\n");
 
-    /*enquanto houver vaga em B e houver heróis esperando na fila*/
-    while (cjto_card(mundo->base[id_base].presentes) < mundo->base[id_base].lotacao && !lista_tamanho(mundo->base[id_base].espera))
+    /*Enquanto houver espaço na base e a fila de espera não estiver vazia*/
+    while (cjto_card(presentes) < lotacao && espera->prim != NULL)
     {
-        /*Retira heroi da lista de espera da base*/
-        lista_retira(mundo->base[id_base].espera, &id_heroi, L_INICIO);
+        id_ptr = fila_retira(espera);
+        if (!id_ptr)
+            break;
 
-        printf("%6d: AVISA  PORTEIRO BASE %d ADMITE %2d\n", tempo, id_base, id_heroi);
+        /*Extrai o id do herói da memória alocada e libera essa memória*/
+        id_heroi = *id_ptr;
+        free(id_ptr);
 
-        /*insere heroi no conjunto de herois presentes na base*/
-        if (!(cjto_insere(mundo->base[id_base].presentes, id_heroi)))
+        printf("%6d: AVISA PORTEIRO BASE %d ADMITE %2d\n", tempo, id_base, id_heroi);
+
+        if (!(cjto_insere(presentes, id_heroi)))
             return 0;
 
-        /*testa e cria evento ENTRA*/
+        /*Cria um novo evento do tipo ENTRA para esse herói e insere na fila de prioridade*/
         if (!(evento = evento_cria(EV_ENTRA, tempo, id_heroi, id_base, 0)))
             return 0;
-
-        /*insere na fila de eventos*/
         fprio_insere(mundo->fprio_eventos, evento, 0, tempo);
     }
 
@@ -239,6 +291,7 @@ int evento_avisa(struct mundo_t *mundo, int tempo, int id_heroi, int id_base)
 
     return 1;
 }
+
 
 int evento_entra(struct mundo_t *mundo, int tempo, int id_heroi, int id_base)
 {
@@ -256,14 +309,17 @@ int evento_entra(struct mundo_t *mundo, int tempo, int id_heroi, int id_base)
     tpb = ((mundo->heroi[id_heroi].paciencia * gera_aleat(1, 20)) + 15);
 
     /*imprime evento*/
-    printf("%6d: ENTRA  HEROI %2d BASE %d (%2d/%2d) SAI %d\n", tempo, id_heroi, id_base, cjto_card(mundo->base[id_base].presentes), mundo->base[id_base].lotacao, tempo + tpb);
+    printf("%6d: ENTRA HEROI %2d BASE %d (%2d/%2d) SAI %d\n", tempo, id_heroi, id_base,
+           cjto_card(mundo->base[id_base].presentes),
+           mundo->base[id_base].lotacao,
+           tempo + tpb);
 
     /*testa e cria evento SAI*/
     if (!(evento = evento_cria(EV_SAI, tpb + tempo, id_heroi, id_base, 0)))
         return 0;
 
     /*insere na fila de eventos*/
-    fprio_insere(mundo->fprio_eventos, evento, 0, tempo);
+    fprio_insere(mundo->fprio_eventos, evento, 0, tempo + tpb);
     atualiza_relogio(mundo, tempo);
 
     return 1;
@@ -281,12 +337,14 @@ int evento_sai(struct mundo_t *mundo, int tempo, int id_heroi, int id_base)
     if (!heroi_testa(mundo, id_heroi))
         return 0;
 
-    /*imprime evento*/
-    printf("%6d: SAI  HEROI %2d BASE %d (%2d/%2d)\n", tempo, id_heroi, id_base, cjto_card(mundo->base[id_base].presentes), mundo->base[id_base].lotacao);
-
     /*retira o heroi do conjunto de presentes da base*/
     if (!(cjto_retira(mundo->base[id_base].presentes, id_heroi)))
         return 0;
+
+    /*imprime evento*/
+    printf("%6d: SAI HEROI %2d BASE %d (%2d/%2d)\n", tempo, id_heroi, id_base,
+           cjto_card(mundo->base[id_base].presentes),
+           mundo->base[id_base].lotacao);
 
     /*gera uma base aleatoria de destino*/
     base_destino = gera_aleat(0, mundo->num_base - 1);
@@ -298,7 +356,7 @@ int evento_sai(struct mundo_t *mundo, int tempo, int id_heroi, int id_base)
         return 0;
 
     /*testa, cria e insere evento AVISA*/
-    if ((evento = evento_cria(EV_AVISA, tempo, id_heroi, id_base, 0)))
+    if ((evento = evento_cria(EV_AVISA, tempo, 0, id_base, 0)))
         fprio_insere(mundo->fprio_eventos, evento, 0, tempo);
     else
         return 0;
@@ -328,9 +386,12 @@ int evento_viaja(struct mundo_t *mundo, int tempo, int id_heroi, int id_base)
 
     /*calcula a duração que o heroi leva até chegar na proxima base*/
     duracao = distancia / mundo->heroi[id_heroi].velocidade;
+    if (duracao == 0)
+        duracao = 1;
 
     /*imprime evento*/
-    printf("%6d: VIAJA  HEROI %2d BASE %d BASE %d DIST %d VEL %d CHEGA %d\n", tempo, id_heroi, base_origem,
+    printf("%6d: VIAJA HEROI %2d BASE %d BASE %d DIST %d VEL %d CHEGA %d\n",
+           tempo, id_heroi, base_origem,
            id_base, distancia, mundo->heroi[id_heroi].velocidade, tempo + duracao);
 
     /*teste e cria evento CHEGA*/
@@ -338,7 +399,7 @@ int evento_viaja(struct mundo_t *mundo, int tempo, int id_heroi, int id_base)
         return 0;
 
     /*insere na fila de eventos*/
-    fprio_insere(mundo->fprio_eventos, evento, 0, tempo);
+    fprio_insere(mundo->fprio_eventos, evento, 0, tempo + duracao);
     atualiza_relogio(mundo, tempo);
 
     return 1;
@@ -351,25 +412,43 @@ int evento_morre(struct mundo_t *mundo, int tempo, int id_heroi, int id_base, in
     if (!mundo)
         return 0;
 
-    /*testa se heroi está vivo ou morto*/
+    /*Verifica se o herói já está morto*/
     if (!heroi_testa(mundo, id_heroi))
         return 0;
 
-    /*retira o heroi do conjunto de herois da base*/
+    /*Se foi por missão com Composto V*/
+    if (id_missao != -1)
+    {
+        /*Marca a missão como cumprida*/
+        mundo->missao[id_missao].realizada = 1;
+        mundo->total_missoes_cumpridas++;
+
+        /*Incrementa experiência dos outros heróis da base*/
+        for (int i = 0; i < mundo->num_herois; i++)
+        {
+            if (i != id_heroi && cjto_pertence(mundo->base[id_base].presentes, i) && mundo->heroi[i].status == 1)
+                mundo->heroi[i].experiencia++;
+        }
+    }
+
+    /*Retira o herói da base*/
     if (!cjto_retira(mundo->base[id_base].presentes, id_heroi))
         return 0;
 
-    /*Atualiza o status do herói para "morto"*/
-    mundo->heroi[id_heroi].status = -1;
+    /*Atualiza status do herói para morto*/
+    mundo->heroi[id_heroi].status = 0;
+    mundo->total_mortes++;
 
-    /*imprime evento*/
-    printf("%6d: MORRE  HEROI %2d MISSAO %d\n", tempo, mundo->heroi[id_heroi].id, id_missao);
+    /*Imprime evento*/
+    if (id_missao != -1)
+        printf("%6d: MORRE HEROI %2d MISSAO %d\n", tempo, id_heroi, id_missao);
+    else
+        printf("%6d: MORRE HEROI %2d\n", tempo, id_heroi);
 
-    /*Testa e cria o evento AVISA*/
-    if (!(evento = evento_cria(EV_AVISA, tempo, 0, id_base, id_missao)))
-        return 1;
+    /*Avisa o porteiro sobre a vaga liberada*/
+    if (!(evento = evento_cria(EV_AVISA, tempo, id_base, 0, 0)))
+        return 0;
 
-    /*insere na fila de eventos*/
     fprio_insere(mundo->fprio_eventos, evento, 0, tempo);
     atualiza_relogio(mundo, tempo);
 
@@ -407,66 +486,171 @@ int evento_missao(struct mundo_t *mundo, int tempo, int id_missao)
 {
     struct evento_t *evento;
     struct cjto_t *uniao_base;
-    int base_mp, i, risco;
+    int base_mp, i;
+    int mais_experiente = -1;
+    int max_exp = -1;
 
-    if (!mundo)
+    /*Verifica validade dos parâmetros e do mundo*/
+    if (!mundo || id_missao < 0 || id_missao >= mundo->num_missoes)
+    {
+        printf("ERRO: mundo ou id_missao inválido\n");
         return 0;
+    }
 
-    mundo->missao[id_missao].tentativas = 1;
-    printf("%6d: MISSAO %d TENT %d HAB REQ: ", tempo, id_missao, mundo->missao[id_missao].tentativas);
-    cjto_imprime(mundo->missao[id_missao].habilidades);
+    /*Ponteiro para a missão a ser processada*/
+    struct missao_t *mis = &mundo->missao[id_missao];
+
+    /*Verifica validade do conjunto de habilidades da missão*/
+    if (!mis || !mis->habilidades || !mis->habilidades->flag || mis->habilidades->cap <= 0)
+    {
+        printf("ERRO: missão %d com conjunto inválido\n", id_missao);
+        return 0;
+    }
+
+    /*Se a missão já foi abandonada anteriormente, ignora*/
+    if (mis->realizada == -1)
+    {
+        printf("%6d: MISSAO %d IGNORADA (já abandonada)\n", tempo, id_missao);
+        return 1;
+    }
+
+    /*Conjunto de habilidades exigidas pela missão*/
+    struct cjto_t *hab = mis->habilidades;
+
+    /*Obtém a base mais próxima da missão*/
+    base_mp = retorna_base_prox(mundo, id_missao);
+    if (base_mp < 0 || base_mp >= mundo->num_base)
+    {
+        printf("ERRO: base mais próxima inválida (%d)\n", base_mp);
+        return 0;
+    }
+
+    /*Cria o conjunto união das habilidades dos heróis presentes na base*/
+    uniao_base = uniao_habil(mundo, base_mp);
+    if (!uniao_base || !uniao_base->flag || uniao_base->cap <= 0)
+    {
+        printf("ERRO: união de habilidades da base %d inválida\n", base_mp);
+        return 0;
+    }
+
+    /*Atualiza o número de tentativas da missão*/
+    mis->tentativas++;
+    mundo->tentativas_por_missao[id_missao]++;
+
+    /*Imprime habilidades presentes na base*/
+    printf("%6d: HABS BASE %d: ", tempo, base_mp);
+    cjto_imprime(uniao_base);
     printf("\n");
 
-    /*acha a base mais proxima*/
-    base_mp = retorna_base_prox(mundo, id_missao);
-    /*faz a uniao das habilidades dos herois presentes na base*/
-    uniao_base = uniao_habil(mundo, base_mp);
+    /*Imprime habilidades requeridas pela missão*/
+    printf("%6d: MISSAO %d TENT %d HAB REQ: ", tempo, id_missao, mis->tentativas);
+    cjto_imprime(hab);
+    printf("\n");
 
-    /*testa se os herois tem as habilidades para realizar a missao*/
-    if (cjto_contem(uniao_base, mundo->missao[id_missao].habilidades))
+    /*A base tem todas as habilidades da missão*/
+    if (cjto_contem(uniao_base, hab))
     {
-        /*missao realizada imprime e incrementa variavel*/
         printf("%6d: MISSAO %d CUMPRIDA BASE %d HABS: ", tempo, id_missao, base_mp);
         cjto_imprime(uniao_base);
         printf("\n");
-        mundo->missao[id_missao].realizada = 1;
 
-        /*calcula o risco da missao*/
+        /*Marca a missão como cumprida*/
+        mis->realizada = 1;
+        mundo->total_missoes_cumpridas++;
+        mundo->base[base_mp].missoes++;
+
+        /*Todos os heróis presentes e vivos ganham experiência*/
         for (i = 0; i < mundo->num_herois; i++)
         {
-            if (cjto_pertence(mundo->base[base_mp].presentes, i))
-            {
-                risco = (mundo->missao[id_missao].perigo / (mundo->heroi[i].paciencia + mundo->heroi[i].experiencia + 1.0));
+            if (cjto_pertence(mundo->base[base_mp].presentes, i) && mundo->heroi[i].status == 1)
+                mundo->heroi[i].experiencia++;
+        }
 
-                /*se o risco for maior*/
-                if (risco > gera_aleat(0, 30))
-                {
-                    /*cria e insere evento MORRE*/
-                    evento = evento_cria(EV_MORRE, tempo, i, 0, id_missao);
-                    fprio_insere(mundo->fprio_eventos, evento, 0, tempo);
-                }
-                else
-                    /*incrementa a experiência de heroi*/
-                    mundo->heroi[i].experiencia++;
+        cjto_destroi(uniao_base);
+        return 1;
+    }
+
+    /*Tentativa de cumprir a missão com Composto V*/
+    if (mundo->n_composto_v > 0 &&
+        tempo % 2500 == 0 &&
+        cjto_card(mundo->base[base_mp].presentes) > 0)
+    {
+        /*Encontra o herói mais experiente da base*/
+        for (i = 0; i < mundo->num_herois; i++)
+        {
+            if (cjto_pertence(mundo->base[base_mp].presentes, i) &&
+                mundo->heroi[i].status == 1 &&
+                mundo->heroi[i].experiencia > max_exp)
+            {
+                max_exp = mundo->heroi[i].experiencia;
+                mais_experiente = i;
             }
         }
+
+        if (mais_experiente != -1)
+        {
+            printf("%6d: MISSAO %d CUMPRIDA BASE %d HABS: ", tempo, id_missao, base_mp);
+            cjto_imprime(uniao_base);
+            printf(" (COM COMPOSTO V)\n");
+
+            /*Marca missão como realizada*/
+            mis->realizada = 1;
+            mundo->total_missoes_cumpridas++;
+            mundo->base[base_mp].missoes++;
+            mundo->n_composto_v--;
+
+            /*Os outros heróis (vivos e diferentes do sacrificado) ganham experiência*/
+            for (i = 0; i < mundo->num_herois; i++)
+            {
+                if (i != mais_experiente &&
+                    cjto_pertence(mundo->base[base_mp].presentes, i) &&
+                    mundo->heroi[i].status == 1)
+                {
+                    mundo->heroi[i].experiencia++;
+                }
+            }
+
+            /*Agenda evento de morte para o herói mais experiente*/
+            evento = evento_cria(EV_MORRE, tempo, mais_experiente, base_mp, id_missao);
+            if (!evento || !fprio_insere(mundo->fprio_eventos, evento, 0, tempo))
+            {
+                cjto_destroi(uniao_base);
+                return 0;
+            }
+
+            cjto_destroi(uniao_base);
+            return 1;
+        }
     }
-    else
+
+    /*Missão impossível no momento*/
+    printf("%6d: MISSAO %d IMPOSSIVEL\n", tempo, id_missao);
+
+    /*Se excedeu 10 tentativas, marca como abandonada*/
+    if (mis->tentativas > 10)
     {
-        /*Missão adiada para 24 horas*/
-        evento = evento_cria(EV_MISSAO, tempo + 24 * 60, 0, 0, id_missao);
-        fprio_insere(mundo->fprio_eventos, evento, 0, tempo);
-        printf("%6d: MISSAO %d IMPOSSIVEL ", tempo, id_missao);
+        printf("%6d: MISSAO %d ABANDONADA APÓS %d TENTATIVAS\n", tempo, id_missao, mis->tentativas);
+        mis->realizada = -1;
+        cjto_destroi(uniao_base);
+        return 1;
     }
 
-    atualiza_relogio(mundo, tempo);
+    /*Agenda nova tentativa após 1 dia (1440 minutos)*/
+    evento = evento_cria(EV_MISSAO, tempo + 24 * 60, id_missao, 0, 0);
+    if (!evento || !fprio_insere(mundo->fprio_eventos, evento, 0, tempo + 24 * 60))
+    {
+        cjto_destroi(uniao_base);
+        return 0;
+    }
 
+    cjto_destroi(uniao_base);
     return 1;
 }
 
 int evento_fim(struct mundo_t *mundo, int tempo)
 {
-    int i;
+    int i, tentativas, min_tent = 1000000, max_tent = 0;
+    double soma_tent = 0.0, media_tent = 0.0, taxa_morte = 0.0, taxa_sucesso = 0.0;
 
     if (!mundo)
         return 0;
@@ -477,7 +661,9 @@ int evento_fim(struct mundo_t *mundo, int tempo)
     /*imprime os status finais de cada heroi*/
     for (i = 0; i < mundo->num_herois; i++)
     {
-        /*testa o status do heroi, vivo ou morto*/
+        if (!mundo->heroi[i].habilidades)
+            continue;
+
         if (mundo->heroi[i].status == 1)
         {
             printf("HEROI %2d VIVO  PAC %3d ", mundo->heroi[i].id, mundo->heroi[i].paciencia);
@@ -487,24 +673,64 @@ int evento_fim(struct mundo_t *mundo, int tempo)
         }
         else
         {
-            printf("HEROI %2d MORTO  PAC %3d ", mundo->heroi[i].id, mundo->heroi[i].paciencia);
+            printf("HEROI %2d MORTO PAC %3d ", mundo->heroi[i].id, mundo->heroi[i].paciencia);
             printf("VEL %4d EXP %4d ", mundo->heroi[i].velocidade, mundo->heroi[i].experiencia);
             printf("HABS ");
             cjto_imprime(mundo->heroi[i].habilidades);
         }
     }
 
-    /*Imprime os status finais de cada base*/
+    /*imprime os status finais de cada base*/
     for (i = 0; i < mundo->num_base; i++)
     {
-        printf("BASE %2d LOT %2d ", mundo->base[i].id_base, mundo->base[i].lotacao);
-        /* printf("FILA MAX %2d "); */
-        lista_imprime(mundo->base[i].espera);
+        printf("BASE %2d LOT %2d FILA MAX %2d MISSOES %d\n",
+               mundo->base[i].id_base,
+               mundo->base[i].lotacao,
+               mundo->base[i].fila_max,
+               mundo->base[i].missoes);
     }
+
+    /*imprime total de eventos processados*/
+    printf("EVENTOS TRATADOS: %d\n", mundo->total_eventos_processados);
+
+    /*imprime total de missoes cumpridas*/
+    if (mundo->num_missoes > 0)
+        taxa_sucesso = (mundo->total_missoes_cumpridas * 100.0) / mundo->num_missoes;
+
+    printf("MISSOES CUMPRIDAS: %d/%d (%.1f%%)\n",
+           mundo->total_missoes_cumpridas,
+           mundo->num_missoes,
+           taxa_sucesso);
+
+    /*calcula tentativas por missão (min, max, média)*/
+    for (i = 0; i < mundo->num_missoes; i++)
+    {
+        tentativas = mundo->tentativas_por_missao[i];
+
+        if (tentativas < min_tent)
+            min_tent = tentativas;
+
+        if (tentativas > max_tent)
+            max_tent = tentativas;
+
+        soma_tent += tentativas;
+    }
+
+    if (mundo->num_missoes > 0)
+        media_tent = soma_tent / mundo->num_missoes;
+
+    printf("TENTATIVAS/MISSAO: MIN %d, MAX %d, MEDIA %.1f\n",
+           min_tent, max_tent, media_tent);
+
+    /*taxa de mortalidade*/
+    if (mundo->num_herois > 0)
+        taxa_morte = (mundo->total_mortes * 100.0) / mundo->num_herois;
+
+    printf("TAXA MORTALIDADE: %.1f%%\n", taxa_morte);
 
     atualiza_relogio(mundo, tempo);
 
-    return 0;
+    return 1;
 }
 
 int evento_inicia(struct mundo_t *mundo)
@@ -531,10 +757,10 @@ int evento_inicia(struct mundo_t *mundo)
     }
 
     /*cria evento MISSAO para cada missao*/
-    for (i = 0; i < mundo->num_missao; i++)
+    for (i = 0; i < mundo->num_missoes; i++)
     {
         /*Gera tempo aleatorio de 0 até (525600 - 1)*/
-        tempo = gera_aleat(0, T_FIM_DO_MUNDO - 1);
+        tempo = gera_aleat(0, T_FIM_DO_MUNDO -1);
 
         /*Testa e cria evento MISSAO*/
         if (!(evento = evento_cria(EV_MISSAO, tempo, i, 0, 0)))
