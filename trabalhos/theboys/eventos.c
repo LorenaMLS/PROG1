@@ -66,10 +66,13 @@ struct cjto_t *uniao_habil(struct mundo_t *mundo, int id_base)
     if (!uniao)
         return NULL;
 
+    /*percorre todos os herois*/
     for (i = 0; i < mundo->num_herois; i++)
-    {
+    {   
+        /*testa se o herois estão presentes na base*/
         if (cjto_pertence(mundo->base[id_base].presentes, i) == 1)
-        {
+        {   
+            /*testa se o herois tem alguma habilidade invalida*/
             if (!mundo->heroi[i].habilidades || !mundo->heroi[i].habilidades->flag)
             {
                 printf("ERRO: herói %d com habilidades inválidas\n", i);
@@ -77,6 +80,7 @@ struct cjto_t *uniao_habil(struct mundo_t *mundo, int id_base)
                 return NULL;
             }
 
+            /*temporario recebe a união de hab de UNIÃO e hab dos HEROIS*/
             tmp = cjto_uniao(uniao, mundo->heroi[i].habilidades);
             if (!tmp)
             {
@@ -84,6 +88,7 @@ struct cjto_t *uniao_habil(struct mundo_t *mundo, int id_base)
                 return NULL;
             }
 
+            /*destroi o antigo conjunto união e faz receber o proximo correto*/
             cjto_destroi(uniao);
             uniao = tmp;
         }
@@ -194,7 +199,7 @@ int evento_espera(struct mundo_t *mundo, int tempo, int id_heroi, int id_base)
         return 0;
     }
 
-    /*Atualiza tamanho máximo da fila se necessáriO*/
+    /*Atualiza tamanho máximo da fila se necessário*/
     int tamanho_fila = fila_tamanho(mundo->base[id_base].espera);
     if (tamanho_fila > mundo->base[id_base].fila_max)
         mundo->base[id_base].fila_max = tamanho_fila;
@@ -253,7 +258,7 @@ int evento_avisa(struct mundo_t *mundo, int tempo, int id_heroi, int id_base)
     presentes = mundo->base[id_base].presentes;
     lotacao = mundo->base[id_base].lotacao;
 
-    /*Testa se o herói está vivo; se estiver morto, a função retorna sem efeito*/
+    /*testa se heroi está vivo ou morto*/
     if (!heroi_testa(mundo, id_heroi))
         return 0;
 
@@ -571,8 +576,7 @@ int evento_missao(struct mundo_t *mundo, int tempo, int id_missao)
     }
 
     /*Tentativa de cumprir a missão com Composto V*/
-    if (mundo->n_composto_v > 0 &&
-        tempo % 2500 == 0 &&
+    if (mundo->n_composto_v > 0 && tempo % 2500 == 0 &&
         cjto_card(mundo->base[base_mp].presentes) > 0)
     {
         /*Encontra o herói mais experiente da base*/
@@ -603,11 +607,8 @@ int evento_missao(struct mundo_t *mundo, int tempo, int id_missao)
             for (i = 0; i < mundo->num_herois; i++)
             {
                 if (i != mais_experiente &&
-                    cjto_pertence(mundo->base[base_mp].presentes, i) &&
-                    mundo->heroi[i].status == 1)
-                {
+                    cjto_pertence(mundo->base[base_mp].presentes, i) && mundo->heroi[i].status == 1)
                     mundo->heroi[i].experiencia++;
-                }
             }
 
             /*Agenda evento de morte para o herói mais experiente*/

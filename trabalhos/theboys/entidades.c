@@ -34,6 +34,7 @@ struct heroi_t *cria_herois(struct mundo_t *mundo)
         vet_heroi[i].habilidades = cjto_cria(gera_aleat(1, 3)); /*cria conjunto com cap de 1 até 3*/
         vet_heroi[i].status = 1;
 
+        /*se o vetor de hab. do herois ou */
         if (!vet_heroi[i].habilidades || !vet_heroi[i].habilidades->flag)
         {
             printf("ERRO: herói %d com conjunto de habilidades inválido\n", i);
@@ -189,7 +190,7 @@ struct mundo_t *cria_mundo()
     mundo->num_missoes = T_FIM_DO_MUNDO / 100;
     mundo->n_composto_v = N_HABILIDADES * 3;
 
-    /*cria prio, base, missao e herois*/
+    /*cria fprio, base, missao e herois*/
     mundo->fprio_eventos = fprio_cria();
     mundo->base = cria_base(mundo);
     mundo->missao = cria_missao(mundo);
@@ -200,6 +201,7 @@ struct mundo_t *cria_mundo()
     mundo->total_missoes_cumpridas = 0;
     mundo->total_mortes = 0;
 
+    /* Verifica se a alocação de memória para tentativas_por_missao falhou */
     mundo->tentativas_por_missao = calloc(mundo->num_missoes, sizeof(int));
     if (!mundo->tentativas_por_missao)
     {
@@ -226,6 +228,7 @@ struct mundo_t *destroi_mundo(struct mundo_t *mundo)
     destroi_missao(mundo);
     destroi_herois(mundo);
 
+    /*Libera tentativas por missao se já tiver sido alocada*/
     if (mundo->tentativas_por_missao)
         free(mundo->tentativas_por_missao);
 
@@ -302,7 +305,7 @@ void base_imprime(struct mundo_t *mundo)
         cjto_imprime(mundo->base[i].presentes);
         printf("\n");
 
-        /*imprime lista de espera*/
+        /*imprime fila de espera*/
         printf("base espera: ");
         fila_imprime(mundo->base[i].espera);
         printf("\n");

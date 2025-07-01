@@ -6,12 +6,12 @@
 #include "conjunto.h"
 #include "entidades.h"
 
-/*Define Lista*/
+/*Define fila*/
 #define L_FIM -1
 #define L_INICIO 0
 
 /*Tipos de eventos que vao entrar na lef:
-NAO usar 0 ou -1 pois sao #defines da lista_t*/
+NAO usar 0 ou -1 pois sao #defines da fila_t*/
 #define EV_CHEGA 1
 #define EV_ESPERA 2
 #define EV_DESISTE 3
